@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  },
+  // Customize the context file name
+  "context": {
+    "fileName": ["GEMINI.md"]
+  }
+}
