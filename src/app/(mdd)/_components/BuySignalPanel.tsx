@@ -211,8 +211,9 @@ function SignalCard({
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      평상시 승률({formatPercent(signal.baseline_win_rate_1y)})
-                      대비 추가 승률
+                      평상시 승률(
+                      {formatPercent(signal.baseline_win_rate_1y ?? null)}) 대비
+                      추가 승률
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -247,8 +248,9 @@ function SignalCard({
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      평상시 수익률(+{formatPercent(signal.baseline_return_1y)})
-                      대비 추가 수익
+                      평상시 수익률(+
+                      {formatPercent(signal.baseline_return_1y ?? null)}) 대비
+                      추가 수익
                     </TooltipContent>
                   </Tooltip>
                 </div>

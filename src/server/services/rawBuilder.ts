@@ -323,9 +323,14 @@ function computeBuySignal(
       description: '분석할 데이터가 충분하지 않습니다.',
       color: '#94a3b8',
       score: 0,
+      sample_size: 0,
       historical_return_6m: null,
       historical_return_1y: null,
+      worst_return_1y: null,
+      best_return_1y: null,
       win_rate_1y: null,
+      baseline_win_rate_1y: null,
+      baseline_return_1y: null,
     }
   }
 
