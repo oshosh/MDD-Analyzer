@@ -13,6 +13,7 @@ interface DataTableProps<TData extends object> {
   rowHeight?: number
   virtualized?: boolean
   getRowClassName?: (row: TData) => string
+  stickyFirstColumn?: boolean
 }
 
 export default function DataTable<TData extends object>({
@@ -23,6 +24,7 @@ export default function DataTable<TData extends object>({
   rowHeight = 34,
   virtualized = false,
   getRowClassName,
+  stickyFirstColumn = false,
 }: DataTableProps<TData>) {
   const {
     table,
@@ -38,12 +40,12 @@ export default function DataTable<TData extends object>({
   return (
     <div
       ref={scrollElementRef}
-      className="border-border/60 bg-card/40 w-full overflow-auto rounded-xl border shadow-sm backdrop-blur-sm"
+      className="border-border/60 bg-card/40 relative block w-full min-w-0 overflow-auto rounded-xl border shadow-sm backdrop-blur-sm box-border"
       style={{ maxHeight }}
     >
       <table
-        className="w-full border-collapse text-[13px] leading-5"
-        style={{ minWidth: totalWidth }}
+        className="min-w-full border-collapse text-[13px] leading-5"
+        style={{ width: totalWidth > 0 ? totalWidth : '100%' }}
       >
         <colgroup>
           {table.getVisibleLeafColumns().map((column) => (
@@ -51,7 +53,7 @@ export default function DataTable<TData extends object>({
           ))}
         </colgroup>
 
-        <TableHeader table={table} />
+        <TableHeader table={table} stickyFirstColumn={stickyFirstColumn} />
 
         <TableBody
           rows={rows}
@@ -62,6 +64,7 @@ export default function DataTable<TData extends object>({
           virtualized={virtualized}
           emptyMessage={emptyMessage}
           getRowClassName={(row) => getRowClassName?.(row.original) ?? ''}
+          stickyFirstColumn={stickyFirstColumn}
         />
       </table>
     </div>

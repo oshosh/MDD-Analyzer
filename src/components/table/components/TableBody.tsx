@@ -14,6 +14,7 @@ interface TableBodyProps<TData extends object> {
   virtualized: boolean
   emptyMessage: string
   getRowClassName?: (row: Row<TData>) => string
+  stickyFirstColumn?: boolean
 }
 
 export function TableBody<TData extends object>({
@@ -25,6 +26,7 @@ export function TableBody<TData extends object>({
   virtualized,
   emptyMessage,
   getRowClassName,
+  stickyFirstColumn,
 }: TableBodyProps<TData>) {
   const hasRows = rows.length > 0
 
@@ -66,15 +68,18 @@ export function TableBody<TData extends object>({
                 customClass
               )}
             >
-              {row.getVisibleCells().map((cell) => {
+              {row.getVisibleCells().map((cell, index) => {
                 const meta = cell.column.columnDef.meta as
                   | ColumnMeta
                   | undefined
+                const isFirst = index === 0 && stickyFirstColumn
                 return (
                   <td
                     key={cell.id}
                     className={cn(
-                      'border-border/20 text-foreground border-r p-2 px-3 whitespace-nowrap last:border-r-0',
+                      'border-border/20 text-foreground border-r p-2 px-3 last:border-r-0',
+                      isFirst &&
+                        'sticky left-0 z-10 bg-card group-even:bg-[#f8f9fa] dark:group-even:bg-zinc-950 group-hover:bg-accent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]',
                       meta?.className && ALIGN_CLASSES[meta.className]
                     )}
                   >
@@ -109,13 +114,16 @@ export function TableBody<TData extends object>({
               customClass
             )}
           >
-            {row.getVisibleCells().map((cell) => {
+            {row.getVisibleCells().map((cell, index) => {
               const meta = cell.column.columnDef.meta as ColumnMeta | undefined
+              const isFirst = index === 0 && stickyFirstColumn
               return (
                 <td
                   key={cell.id}
                   className={cn(
-                    'border-border/20 text-foreground border-r p-2 px-3 whitespace-nowrap last:border-r-0',
+                    'border-border/20 text-foreground border-r p-2 px-3 last:border-r-0',
+                    isFirst &&
+                      'sticky left-0 z-10 bg-card group-even:bg-[#f8f9fa] dark:group-even:bg-zinc-950 group-hover:bg-accent shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]',
                     meta?.className && ALIGN_CLASSES[meta.className]
                   )}
                 >

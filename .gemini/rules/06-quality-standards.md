@@ -17,14 +17,15 @@ alwaysApply: true
 # 📋 코드 품질 표준 (Code Quality Standards)
 
 ### 테스트 및 품질 관리 도구
-
 - **Vitest 3.0.7**: 고성능 단위 테스트 프레임워크
+- **Playwright MCP**: 모바일 레이아웃 및 시각적 무결성 검증 (iPhone XR/13 타겟)
 - **ESLint 8.57.0 / Next.js Config**: 코드 품질 및 스타일 가이드 준수 (안정성을 위해 8.x 사용)
 - **Prettier 3.5.1**: 자동 코드 포맷팅 및 Tailwind 클래스 정렬
 - **Knip**: 사용되지 않는 파일, 타입, 의존성 감지
 
 ### 품질 준수 규칙
-
 - **정적 분석**: 커밋 전 `pnpm typecheck` 및 `pnpm knip`을 통해 오류 및 불필요한 코드를 점검합니다.
+- **시각적 검증 필수**: 모바일 레이아웃 이슈 발생 시 Playwright MCP를 통한 실제 화면 스캔(`viewport: 390px, 414px`) 및 스냅샷 촬영(`page.screenshot`)을 완료해야 합니다.
 - **코드 스타일**: Prettier 설정을 준수하며, ESLint 경고를 무시하지 않습니다.
 - **테스트 필수**: 핵심 MDD 계산 로직(`src/lib/finance/calc.ts`) 수정 시 `tests/calc.test.ts`를 통과해야 합니다.
+

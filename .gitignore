@@ -56,3 +56,8 @@ desktop.ini
 .gemini/tmp/
 .gemini/cache/
 .vercel
+
+
+*.png
+*.log
+test.md

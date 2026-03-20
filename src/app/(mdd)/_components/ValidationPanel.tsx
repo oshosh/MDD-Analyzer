@@ -89,8 +89,8 @@ export default function ValidationPanel({ validation }: ValidationPanelProps) {
   )
 
   return (
-    <Card className="bg-card/40 border-none shadow-lg backdrop-blur-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
+    <Card className="bg-card/40 min-w-0 overflow-hidden border-none shadow-lg backdrop-blur-md">
+      <CardHeader className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <ShieldCheck className="text-primary h-5 w-5" />
           <CardTitle className="text-base font-bold">
@@ -98,7 +98,7 @@ export default function ValidationPanel({ validation }: ValidationPanelProps) {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="max-w-full space-y-6 overflow-hidden">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Alert className="bg-primary/5 border-primary/10 rounded-2xl">
             <Calculator className="h-4 w-4" />
@@ -139,12 +139,15 @@ export default function ValidationPanel({ validation }: ValidationPanelProps) {
           </div>
         </div>
 
-        <DataTable
-          data={data}
-          columns={columns}
-          maxHeight={260}
-          emptyMessage={'데이터 없음'}
-        />
+        <div className="min-w-0 overflow-hidden rounded-xl border border-border/40">
+          <DataTable
+            data={data}
+            columns={columns}
+            maxHeight={260}
+            emptyMessage={'데이터 없음'}
+            stickyFirstColumn
+          />
+        </div>
       </CardContent>
     </Card>
   )

@@ -59,7 +59,7 @@ export default function RawTable({ rows, meta }: RawTableProps) {
         accessorKey: 'date',
         header: '일자',
         size: 110,
-        meta: { className: 'center' },
+        meta: { className: 'center whitespace-nowrap' },
         cell: ({ row }) => (
           <span className="tabular-nums">{row.original.date}</span>
         ),
@@ -194,20 +194,20 @@ export default function RawTable({ rows, meta }: RawTableProps) {
   )
 
   return (
-    <Card className="bg-card/40 border-none shadow-lg backdrop-blur-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
+    <Card className="bg-card/40 min-w-0 overflow-hidden border-none shadow-lg backdrop-blur-md">
+      <CardHeader className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <Table className="text-primary h-5 w-5" />
           <CardTitle className="text-base font-bold">
             RAW 시계열 데이터
           </CardTitle>
         </div>
-        <Badge variant="secondary" className="gap-1.5 text-[10px] font-bold">
+        <Badge variant="secondary" className="w-fit gap-1.5 text-[10px] font-bold">
           <Database className="h-3 w-3" />
           {meta.data_source}
         </Badge>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="max-w-full space-y-4 overflow-hidden">
         <Alert
           variant="default"
           className="bg-muted/30 rounded-2xl border-none"
@@ -227,6 +227,7 @@ export default function RawTable({ rows, meta }: RawTableProps) {
           rowHeight={34}
           emptyMessage={'데이터 없음'}
           virtualized
+          stickyFirstColumn
         />
       </CardContent>
     </Card>

@@ -27,14 +27,13 @@ function useBasicColumns() {
       {
         accessorKey: 'label',
         header: '항목',
-        size: 260,
+        meta: { className: 'left whitespace-normal break-words min-w-[120px]' },
         cell: ({ row }) => row.original.label,
       },
       {
         accessorKey: 'value',
         header: '값',
-        size: 180,
-        meta: { className: 'number' },
+        meta: { className: 'number whitespace-nowrap' },
         cell: ({ row }) => row.original.value,
       },
     ],
@@ -67,12 +66,15 @@ function ForecastView({ forecast }: { forecast: RecoveryForecast }) {
   ]
   const columns = useBasicColumns()
   return (
-    <DataTable
-      data={rows}
-      columns={columns}
-      maxHeight={280}
-      emptyMessage={'데이터 없음'}
-    />
+    <div className="min-w-0 overflow-hidden rounded-xl border border-border/40">
+      <DataTable
+        data={rows}
+        columns={columns}
+        maxHeight={280}
+        emptyMessage={'데이터 없음'}
+        stickyFirstColumn
+      />
+    </div>
   )
 }
 
@@ -90,12 +92,15 @@ function BottomView({ bottom }: { bottom: BottomProbability }) {
   ]
   const columns = useBasicColumns()
   return (
-    <DataTable
-      data={rows}
-      columns={columns}
-      maxHeight={220}
-      emptyMessage={'데이터 없음'}
-    />
+    <div className="min-w-0 overflow-hidden rounded-xl border border-border/40">
+      <DataTable
+        data={rows}
+        columns={columns}
+        maxHeight={220}
+        emptyMessage={'데이터 없음'}
+        stickyFirstColumn
+      />
+    </div>
   )
 }
 
@@ -120,17 +125,20 @@ function FxImpactView({ impact }: { impact: FxImpact | null }) {
   ]
 
   return (
-    <>
-      <p className="text-muted-foreground mt-2 text-xs">
+    <div className="space-y-2">
+      <p className="text-muted-foreground text-xs leading-relaxed">
         {'현재 원화 손실을 주가 요인과 환율 요인으로 단순 분해한 값입니다.'}
       </p>
-      <DataTable
-        data={rows}
-        columns={columns}
-        maxHeight={220}
-        emptyMessage={'데이터 없음'}
-      />
-    </>
+      <div className="min-w-0 overflow-hidden rounded-xl border border-border/40">
+        <DataTable
+          data={rows}
+          columns={columns}
+          maxHeight={220}
+          emptyMessage={'데이터 없음'}
+          stickyFirstColumn
+        />
+      </div>
+    </div>
   )
 }
 
@@ -146,26 +154,29 @@ function CurrencyAnalytics({
   fxImpact: FxImpact | null
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+    <Card className="bg-card/40 min-w-0 overflow-hidden border-none shadow-lg backdrop-blur-md">
+      <CardHeader className="flex flex-col gap-2 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <CardTitle className="text-base font-bold">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-3">
-        <article>
-          <h3 className="mb-2 text-[13px] font-semibold">
+      <CardContent className="grid max-w-full gap-6 overflow-hidden">
+        <article className="min-w-0">
+          <h3 className="mb-2 flex items-center gap-2 text-[13px] font-bold">
+            <div className="bg-primary h-3.5 w-1 rounded-full" />
             {'Drawdown 회복 예측'}
           </h3>
           <ForecastView forecast={forecast} />
         </article>
-        <article>
-          <h3 className="mb-2 text-[13px] font-semibold">
+        <article className="min-w-0">
+          <h3 className="mb-2 flex items-center gap-2 text-[13px] font-bold">
+            <div className="bg-primary h-3.5 w-1 rounded-full" />
             {'바닥 확률(역사 백분위)'}
           </h3>
           <BottomView bottom={bottom} />
         </article>
-        <article>
-          <h3 className="mb-2 text-[13px] font-semibold">
-            {'손실 원인 분해(주가 vs 환율)'}
+        <article className="min-w-0">
+          <h3 className="mb-2 flex items-center gap-2 text-[13px] font-bold">
+            <div className="bg-primary h-3.5 w-1 rounded-full" />
+            {'손실 원인 분해'}
           </h3>
           <FxImpactView impact={fxImpact} />
         </article>

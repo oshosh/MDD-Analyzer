@@ -214,6 +214,7 @@ export default function RecoveryTable({
           columns={columns}
           maxHeight={600}
           emptyMessage={'데이터 없음'}
+          stickyFirstColumn
           getRowClassName={(row) => {
             const level = parseInt(row.range_label.replace('%', '')) / 100
             return Math.abs(currentDrawdown - level) < 0.025
