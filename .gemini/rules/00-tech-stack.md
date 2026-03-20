@@ -32,16 +32,19 @@ src/
 # ⚙️ 기술 스택 (Technology Stack)
 
 ### Core Framework
+
 - **Next.js 15.1.6 (App Router)**: 최신 서버 컴포넌트 아키텍처 및 Turbopack 활용
 - **React 19.0.0**: 최신 리액트 기능 반영
 - **TypeScript 5.7.3**: 런타임 안정성을 위한 엄격한 타입 시스템
 
 ### 상태 관리 및 데이터 페칭
+
 - **TanStack Query 5.66.9**: 서버 상태 관리 및 API 캐싱
 - **Jotai 2.11.1**: 원자(Atom) 단위의 가벼운 클라이언트 상태 관리
 - **Zod 3.24.2**: 데이터 검증 및 런타임 타입 체크
 
 ### UI 및 디자인
+
 - **Tailwind CSS 4.2.1**: 유틸리티 우선의 현대적인 스타일링 및 `globals.css` 기반 토큰 관리
 - **Material 3 Design**: 구글의 최신 디자인 시스템 가이드 준수
 - **Lucide React 0.575.0**: 일관된 시스템 아이콘

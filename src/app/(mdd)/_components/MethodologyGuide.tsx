@@ -76,11 +76,11 @@ export default function MethodologyGuide() {
               <div className="text-muted-foreground space-y-4 text-[13px] leading-relaxed">
                 <div className="bg-primary/5 border-primary/10 space-y-3 rounded-2xl border p-4">
                   <p className="text-foreground text-sm font-bold italic">
-                    "왜 모든 티커의 승률이 좋게 나오지 않나요?"
+                    `왜 모든 티커의 승률이 좋게 나오지 않나요?`
                   </p>
                   <p>
                     본 서비스는 단순히 승률을 보여주는 것이 아니라,{' '}
-                    <strong>'통계적 우위(Alpha)'</strong>를 분석합니다. 대부분의
+                    <strong>`통계적 우위(Alpha)`</strong>를 분석합니다. 대부분의
                     우상향 자산은 평소에도 승률이 높습니다. 따라서 우리는 다음
                     두 수치를 비교합니다.
                   </p>
@@ -114,7 +114,7 @@ export default function MethodologyGuide() {
                     </strong>{' '}
                     하락장에서 옆으로 기어갈 때 발생하는 수많은 중복 날짜를
                     제거하고, 최소 20거래일 간격을 둔{' '}
-                    <strong>'독립적인 하락 사건'</strong>들만 추출하여 분석의
+                    <strong>`독립적인 하락 사건`</strong>들만 추출하여 분석의
                     신뢰도를 높였습니다.
                   </p>
                   <p>
@@ -155,7 +155,7 @@ export default function MethodologyGuide() {
                     <span className="font-bold text-emerald-500">●</span>
                     <p className="text-muted-foreground">
                       <strong>1년 뒤 승률:</strong> 자산이 깊은 하락장에 빠진{' '}
-                      <strong>'특정한 날'에 매수</strong>했을 때의 미래 성과를
+                      <strong>`특정한 날`에 매수</strong>했을 때의 미래 성과를
                       측정합니다.
                     </p>
                   </li>
@@ -183,7 +183,7 @@ export default function MethodologyGuide() {
                     원화 가격 = 달러 가격 × 현재 환율
                   </code>
                   본 계산기는 환율 변동을 실시간 반영하여, 한국 투자자가 실제로
-                  느끼는 **'실질 리스크'**와 **'원화 기준 매수 적기'**를 별도로
+                  느끼는 **`실질 리스크`**와 **`원화 기준 매수 적기`**를 별도로
                   산출합니다.
                 </p>
               </div>

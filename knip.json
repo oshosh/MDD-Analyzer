@@ -5,5 +5,15 @@
     "src/app/page.tsx",
     "src/app/api/**/route.ts"
   ],
-  "project": ["src/**/*.{ts,tsx}"]
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignoreDependencies": [
+    "tailwindcss",
+    "tailwindcss-animate",
+    "tw-animate-css",
+    "shadcn",
+    "@eslint/eslintrc",
+    "@eslint/js",
+    "@next/eslint-plugin-next",
+    "@radix-ui/react-separator"
+  ]
 }

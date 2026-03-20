@@ -100,6 +100,8 @@ function BottomView({ bottom }: { bottom: BottomProbability }) {
 }
 
 function FxImpactView({ impact }: { impact: FxImpact | null }) {
+  const columns = useBasicColumns()
+
   if (!impact) {
     return (
       <p className="text-muted-foreground py-4 text-center text-sm">
@@ -116,7 +118,6 @@ function FxImpactView({ impact }: { impact: FxImpact | null }) {
     { label: '주가 영향', value: formatPercent(impact.stock_contribution) },
     { label: '환율 영향', value: formatPercent(impact.fx_contribution) },
   ]
-  const columns = useBasicColumns()
 
   return (
     <>

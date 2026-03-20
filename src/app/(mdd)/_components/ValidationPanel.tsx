@@ -9,7 +9,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { formatNumber } from '@/lib/format'
 import type { RawApiResponse } from '@/lib/types'
 import { CheckCircle2, XCircle, ShieldCheck, Calculator } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 interface ValidationPanelProps {
   validation: RawApiResponse['validation']

@@ -61,8 +61,8 @@ export function findMdd(drawdowns: number[]): { value: number; index: number } {
 export function buildSummary(
   dates: string[],
   closes: number[],
-  drawdowns: number[],
-  peaks: number[]
+  drawdowns: number[]
+  //peaks: number[]
 ): SummaryRow {
   if (closes.length === 0) {
     throw new Error('Cannot build summary from empty closes')

@@ -16,41 +16,41 @@ interface RawTableProps {
   meta: RawApiResponse['meta']
 }
 
-const RAW_COLUMNS = [
-  { key: 'date', title: '일자', description: '거래 날짜(YYYY-MM-DD)' },
-  { key: 'open', title: '시가', description: '해당 일자의 시가' },
-  { key: 'high', title: '고가', description: '해당 일자의 고가' },
-  { key: 'low', title: '저가', description: '해당 일자의 저가' },
-  { key: 'close', title: '종가', description: 'MDD 계산 기준 가격' },
-  { key: 'volume', title: '거래량', description: '해당 일자의 거래량' },
-  {
-    key: 'change_percent',
-    title: '등락률',
-    description: '전일 종가 대비 당일 종가 변화율',
-  },
-  { key: 'peak', title: '고점', description: 'start~t 구간 rolling 최고 종가' },
-  { key: 'drawdown', title: '낙폭', description: '(close - peak) / peak' },
-  {
-    key: 'fx_usdkrw',
-    title: '환율',
-    description: 'USDKRW 환율(US/GOLD에서 사용)',
-  },
-  {
-    key: 'close_krw',
-    title: '원화 종가',
-    description: 'USD 종가 * 환율 또는 KR 종가',
-  },
-  {
-    key: 'peak_krw',
-    title: '원화 고점',
-    description: '원화 기준 rolling 최고값',
-  },
-  {
-    key: 'drawdown_krw',
-    title: '원화 낙폭',
-    description: '원화 기준 drawdown',
-  },
-] as const
+// const RAW_COLUMNS = [
+//   { key: 'date', title: '일자', description: '거래 날짜(YYYY-MM-DD)' },
+//   { key: 'open', title: '시가', description: '해당 일자의 시가' },
+//   { key: 'high', title: '고가', description: '해당 일자의 고가' },
+//   { key: 'low', title: '저가', description: '해당 일자의 저가' },
+//   { key: 'close', title: '종가', description: 'MDD 계산 기준 가격' },
+//   { key: 'volume', title: '거래량', description: '해당 일자의 거래량' },
+//   {
+//     key: 'change_percent',
+//     title: '등락률',
+//     description: '전일 종가 대비 당일 종가 변화율',
+//   },
+//   { key: 'peak', title: '고점', description: 'start~t 구간 rolling 최고 종가' },
+//   { key: 'drawdown', title: '낙폭', description: '(close - peak) / peak' },
+//   {
+//     key: 'fx_usdkrw',
+//     title: '환율',
+//     description: 'USDKRW 환율(US/GOLD에서 사용)',
+//   },
+//   {
+//     key: 'close_krw',
+//     title: '원화 종가',
+//     description: 'USD 종가 * 환율 또는 KR 종가',
+//   },
+//   {
+//     key: 'peak_krw',
+//     title: '원화 고점',
+//     description: '원화 기준 rolling 최고값',
+//   },
+//   {
+//     key: 'drawdown_krw',
+//     title: '원화 낙폭',
+//     description: '원화 기준 drawdown',
+//   },
+// ] as const
 
 export default function RawTable({ rows, meta }: RawTableProps) {
   const columns = useMemo<ColumnDef<RawRow>[]>(

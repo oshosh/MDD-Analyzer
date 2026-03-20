@@ -10,14 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { formatPercent } from '@/lib/format'
 import type { IntervalType, RecoveryRow } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import {
-  Zap,
-  Target,
-  AlertTriangle,
-  Flame,
-  ShieldCheck,
-  Info,
-} from 'lucide-react'
+import { Zap, Target, AlertTriangle, Flame, Info } from 'lucide-react'
 
 interface RecoveryTableProps {
   title: string
@@ -234,7 +227,7 @@ export default function RecoveryTable({
           <AlertDescription className="text-[10px] leading-relaxed">
             <span className="text-foreground font-bold">구간 체류 비중</span>이
             낮을수록 해당 가격대는 역사적으로 매우 짧은 기간만 허용된{' '}
-            <strong>'초저평가 골짜기'</strong>입니다. 하이라이트된 행은{' '}
+            <strong>`초저평가 골짜기`</strong>입니다. 하이라이트된 행은{' '}
             <strong>현재 자산의 낙폭 위치</strong>를 나타냅니다.
           </AlertDescription>
         </Alert>

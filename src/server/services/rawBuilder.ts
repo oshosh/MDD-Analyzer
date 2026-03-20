@@ -222,7 +222,7 @@ function buildRawRows(
   // 환율 데이터를 날짜순으로 정렬된 배열로 변환 (날짜 미일치 대비)
   const fxEntries = fxByDate
     ? Array.from(fxByDate.entries())
-        .filter(([_, rate]) => rate > 0)
+        .filter(([, rate]) => rate > 0)
         .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
     : []
 

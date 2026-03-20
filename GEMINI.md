@@ -16,6 +16,7 @@
 @.gemini/rules/01-project-scope.md
 
 ### 핵심 설정
+
 - **`package.json`**: Next.js 15.1.6, React 19.0.0 기반의 풀스택 의존성 관리
 - **`next.config.ts`**: Turbopack 및 최적화 설정이 포함된 Next.js 설정
 - **`tsconfig.json`**: 엄격한 타입을 위한 TypeScript 5.7.3 설정

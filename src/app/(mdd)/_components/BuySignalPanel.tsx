@@ -8,7 +8,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { Progress } from '@/components/ui/progress'
 import { formatPercent } from '@/lib/format'
 import type { BuySignal, RawApiResponse } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -19,10 +18,8 @@ import {
   AlertCircle,
   Zap,
   HelpCircle,
-  Target,
   BarChart2,
   MousePointerClick,
-  ArrowUpRight,
 } from 'lucide-react'
 
 interface BuySignalPanelProps {

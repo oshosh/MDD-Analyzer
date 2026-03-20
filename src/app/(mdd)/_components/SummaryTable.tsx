@@ -18,7 +18,9 @@ import {
   Clock,
   ArrowRightCircle,
   Database,
+  LucideProps,
 } from 'lucide-react'
+import { ForwardRefExoticComponent, RefAttributes } from 'react'
 
 interface SummaryTableProps {
   summary: RawApiResponse['summary']
@@ -51,7 +53,9 @@ function StatCard({
   label: string
   usd: string
   krw: string
-  icon: any
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+  >
   className?: string
 }) {
   const isNegative = usd.startsWith('-') || krw.startsWith('-')
