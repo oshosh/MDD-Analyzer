@@ -85,21 +85,20 @@ export interface ChartPoint {
   date: string
   value: number
 }
-
 export interface BuySignal {
   level: 1 | 2 | 3 | 4 | 5
   label: string
   description: string
   color: string
   score: number
-  sample_size: number
+  sample_size?: number
   historical_return_6m: number | null
   historical_return_1y: number | null
-  worst_return_1y: number | null
-  best_return_1y: number | null
+  worst_return_1y?: number | null
+  best_return_1y?: number | null
   win_rate_1y: number | null
-  baseline_win_rate_1y: number | null // 아무 때나 샀을 때의 승률
-  baseline_return_1y: number | null // 아무 때나 샀을 때의 평균 수익률
+  baseline_win_rate_1y?: number | null // 아무 때나 샀을 때의 승률
+  baseline_return_1y?: number | null // 아무 때나 샀을 때의 평균 수익률
 }
 
 export interface RawApiResponse {

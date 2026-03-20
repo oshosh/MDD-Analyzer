@@ -487,10 +487,10 @@ export async function buildRawResponse(params: {
 
   const dates = rawRows.map((row) => row.date)
   const usdCloses = rawRows.map((row) => row.close)
-  const usdPeaks = rawRows.map((row) => row.peak)
+  // const usdPeaks = rawRows.map((row) => row.peak)
   const usdDrawdowns = rawRows.map((row) => row.drawdown)
   const krwCloses = rawRows.map((row) => row.close_krw)
-  const krwPeaks = rawRows.map((row) => row.peak_krw)
+  // const krwPeaks = rawRows.map((row) => row.peak_krw)
   const krwDrawdowns = rawRows.map((row) => row.drawdown_krw)
 
   const listingInfo = await getListingInfo({
@@ -520,9 +520,11 @@ export async function buildRawResponse(params: {
   const cumulativeUsd = useFx ? buildCumulative(usdCloses) : null
   const cumulativeKrw = buildCumulative(krwCloses)
   const summaryUsd = useFx
-    ? buildSummary(dates, usdCloses, usdDrawdowns, usdPeaks)
+    ? // ? buildSummary(dates, usdCloses, usdDrawdowns, usdPeaks)
+      buildSummary(dates, usdCloses, usdDrawdowns)
     : null
-  const summaryKrw = buildSummary(dates, krwCloses, krwDrawdowns, krwPeaks)
+  // const summaryKrw = buildSummary(dates, krwCloses, krwDrawdowns, krwPeaks)
+  const summaryKrw = buildSummary(dates, krwCloses, krwDrawdowns)
   const analyticsUsd = useFx
     ? {
         recovery_forecast: computeRecoveryForecast(
