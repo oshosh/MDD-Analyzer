@@ -121,25 +121,29 @@ export default function ValidationPanel({ validation }: ValidationPanelProps) {
             </AlertDescription>
           </Alert>
 
-          <div className="space-y-3">
-            <p className="text-muted-foreground px-1 text-[10px] font-bold uppercase">
-              검증 로그
-            </p>
-            <div className="space-y-2">
-              {validation.note.map((note, i) => (
-                <div
-                  key={i}
-                  className="text-muted-foreground flex gap-2 px-1 text-[11px] leading-tight"
-                >
-                  <div className="bg-primary/40 mt-1.5 h-1 w-1 shrink-0 rounded-full" />
-                  {note}
-                </div>
-              ))}
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="p-2 pb-0">
+              <CardTitle className="text-muted-foreground px-1 text-[10px] font-bold uppercase">
+                검증 로그
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2">
+              <div className="space-y-2">
+                {validation.note.map((note, i) => (
+                  <div
+                    key={i}
+                    className="text-muted-foreground flex gap-2 px-1 text-[11px] leading-tight"
+                  >
+                    <div className="bg-primary/40 mt-1.5 h-1 w-1 shrink-0 rounded-full" />
+                    {note}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-xl border border-border/40">
+        <div className="border-border/40 min-w-0 overflow-hidden rounded-xl border">
           <DataTable
             data={data}
             columns={columns}

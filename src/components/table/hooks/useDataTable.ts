@@ -1,12 +1,10 @@
 'use client'
 
-import {
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-} from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { type ColumnDef } from '@tanstack/react-table'
 import { useRef } from 'react'
+
+import { useTanstackTable } from './useTanstackTable'
+import { useTanstackVirtualizer } from './useTanstackVirtualizer'
 
 interface UseDataTableProps<TData extends object> {
   data: TData[]
@@ -21,36 +19,18 @@ export function useDataTable<TData extends object>({
   rowHeight,
   virtualized,
 }: UseDataTableProps<TData>) {
-  const scrollElementRef = useRef<HTMLDivElement>(null)
-
-  const table = useReactTable({
+  const { table, rows, visibleColumnCount, totalWidth } = useTanstackTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
   })
 
-  const rows = table.getRowModel().rows
-  const visibleColumnCount = table.getVisibleLeafColumns().length
-  const totalWidth = table.getTotalSize()
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => scrollElementRef.current,
-    estimateSize: () => rowHeight,
-    overscan: 12,
-    enabled: virtualized,
-  })
-
-  const virtualRows = rowVirtualizer.getVirtualItems()
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0
-  const paddingBottom =
-    virtualRows.length > 0
-      ? Math.max(
-          0,
-          rowVirtualizer.getTotalSize() -
-            virtualRows[virtualRows.length - 1].end
-        )
-      : 0
+  const {
+    scrollElementRef,
+    virtualRows,
+    paddingTop,
+    paddingBottom,
+    rowVirtualizer,
+  } = useTanstackVirtualizer({ rows, rowHeight, virtualized })
 
   return {
     table,
@@ -61,5 +41,6 @@ export function useDataTable<TData extends object>({
     virtualRows,
     paddingTop,
     paddingBottom,
+    rowVirtualizer,
   }
 }

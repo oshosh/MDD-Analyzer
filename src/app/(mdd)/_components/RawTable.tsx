@@ -202,7 +202,10 @@ export default function RawTable({ rows, meta }: RawTableProps) {
             RAW 시계열 데이터
           </CardTitle>
         </div>
-        <Badge variant="secondary" className="w-fit gap-1.5 text-[10px] font-bold">
+        <Badge
+          variant="secondary"
+          className="w-fit gap-1.5 text-[10px] font-bold"
+        >
           <Database className="h-3 w-3" />
           {meta.data_source}
         </Badge>

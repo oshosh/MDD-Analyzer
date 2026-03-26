@@ -1,16 +1,22 @@
-'use client'
-
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import type { StylesConfig } from 'react-select'
 import { todayIso } from '@/lib/date'
 import { browserApiClient } from '@/lib/http/axios'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import type { Instrument, IntervalType } from '@/lib/types'
 import type { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import { Calendar, BarChart3, ArrowRight } from 'lucide-react'
+import { useSymbolDates } from '@/app/(mdd)/_hooks/useSymbolDates' // NEW IMPORT
 
 interface ListingResponse {
   listing_date: string
@@ -113,6 +119,7 @@ export default function ControlPanel({ value }: ControlPanelProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const searchCache = useMemo(() => new Map<string, SymbolOption[]>(), [])
+  const { getDatesForSymbol, loading: isFetchingDates } = useSymbolDates() // NEW HOOK CALL
 
   // Ensure document.body is available for menu portal
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
@@ -180,36 +187,25 @@ export default function ControlPanel({ value }: ControlPanelProps) {
         className="flex flex-col gap-2 lg:flex-row lg:items-center"
         onSubmit={async (event) => {
           event.preventDefault()
-          if (isSubmitting) return
+          if (isSubmitting || isFetchingDates) return // Check isFetchingDates
 
           setIsSubmitting(true)
           try {
             const nextSymbol = symbolInput.trim().toUpperCase()
             if (!nextSymbol) return
-            let nextFrom = from
-            let nextTo = to
-
-            // 티커가 변경된 경우에만 해당 주식의 상장일을 가져와서 날짜 범위를 리셋
-            if (nextSymbol !== value.symbol.toUpperCase()) {
-              try {
-                const response = await browserApiClient.get<ListingResponse>(
-                  '/api/listing',
-                  {
-                    params: { symbol: nextSymbol },
-                  }
-                )
-                const listing = response.data
-                nextFrom = listing.listing_date
-                nextTo = todayIso()
-              } catch {
-                // listing lookup fails: keep current input dates
-              }
-            }
+            
+            // Replaced the conditional date fetching logic with useSymbolDates hook
+            const { from: resolvedFrom, to: resolvedTo } = await getDatesForSymbol(
+              nextSymbol,
+              value.symbol, // current symbol in URL to check if it's new
+              from,           // current 'from' in form
+              to              // current 'to' in form
+            )
 
             const params = new URLSearchParams({
               symbol: nextSymbol,
-              from: nextFrom,
-              to: nextTo,
+              from: resolvedFrom,
+              to: resolvedTo,
               interval,
             })
             router.push(`/?${params.toString()}`)
@@ -270,23 +266,27 @@ export default function ControlPanel({ value }: ControlPanelProps) {
 
           <div className="bg-card flex min-w-[100px] items-center gap-2 rounded-lg px-3 py-2 shadow-sm">
             <BarChart3 className="text-muted-foreground h-3.5 w-3.5" />
-            <select
-              className="cursor-pointer bg-transparent text-sm font-bold outline-none"
+            <Select
               value={interval}
-              onChange={(e) => setInterval(e.target.value as IntervalType)}
+              onValueChange={(value) => setInterval(value as IntervalType)}
             >
-              <option value="1d">1D</option>
-              <option value="1w">1W</option>
-              <option value="1m">1M</option>
-            </select>
+              <SelectTrigger className="border-none bg-transparent font-bold outline-none focus:ring-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1d">1D</SelectItem>
+                <SelectItem value="1w">1W</SelectItem>
+                <SelectItem value="1m">1M</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isFetchingDates} // Disable while fetching dates
             className="bg-primary shadow-primary/20 h-11 rounded-xl px-8 font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-95"
           >
-            {isSubmitting ? '조회 중' : '분석 실행'}
+            {isSubmitting || isFetchingDates ? '조회 중' : '분석 실행'}
           </Button>
         </div>
       </form>

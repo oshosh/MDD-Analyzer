@@ -19,6 +19,14 @@ interface RecoveryTableProps {
   currentDrawdown: number
 }
 
+// Thresholds for drawdown analysis
+const CRITICAL_DRAWDOWN_THRESHOLD = -70
+const SEVERE_DRAWDOWN_THRESHOLD = -50
+const AGGRESSIVE_EXPANSION_THRESHOLD = -30
+const MODERATE_DRAWDOWN_THRESHOLD = -20
+const PHASED_BUYING_THRESHOLD = -15
+const CURRENT_POSITION_TOLERANCE = 0.025
+
 function intervalLabel(interval: IntervalType): string {
   if (interval === '1w') return '(주봉x5일 환산)'
   if (interval === '1m') return '(월봉x21일 환산)'
@@ -46,7 +54,12 @@ export default function RecoveryTable({
             row.original.range_label.replace('%', '')
           )
           const level = levelPercent / 100
-          const isCurrent = Math.abs(currentDrawdown - level) < 0.025
+          const isCurrent = Math.abs(currentDrawdown - level) < CURRENT_POSITION_TOLERANCE
+
+          // NAMED CONDITIONS for Badge variant, className, and icon
+          const isCriticalDrawdown = levelPercent <= CRITICAL_DRAWDOWN_THRESHOLD
+          const isSevereDrawdown = levelPercent <= SEVERE_DRAWDOWN_THRESHOLD
+          const isModerateDrawdown = levelPercent <= MODERATE_DRAWDOWN_THRESHOLD
 
           return (
             <div className="relative flex items-center justify-center gap-2">
@@ -57,28 +70,28 @@ export default function RecoveryTable({
               )}
               <Badge
                 variant={
-                  levelPercent <= -70
+                  isCriticalDrawdown
                     ? 'destructive'
-                    : levelPercent <= -50
+                    : isSevereDrawdown
                       ? 'default'
                       : 'outline'
                 }
                 className={cn(
                   'gap-1 px-2 font-bold',
-                  levelPercent <= -70
+                  isCriticalDrawdown
                     ? 'border-none bg-orange-500 hover:bg-orange-600'
-                    : levelPercent <= -50
+                    : isSevereDrawdown
                       ? 'border-none bg-purple-600 hover:bg-purple-700'
-                      : levelPercent <= -20
+                      : isModerateDrawdown
                         ? 'border-blue-200 bg-blue-50 text-blue-600'
                         : ''
                 )}
               >
-                {levelPercent <= -70 ? (
+                {isCriticalDrawdown ? (
                   <Flame className="h-3 w-3" />
-                ) : levelPercent <= -50 ? (
+                ) : isSevereDrawdown ? (
                   <Zap className="h-3 w-3" />
-                ) : levelPercent <= -20 ? (
+                ) : isModerateDrawdown ? (
                   <Target className="h-3 w-3" />
                 ) : null}
                 {row.original.range_label} 이내
@@ -96,12 +109,17 @@ export default function RecoveryTable({
           const value = row.original.recovery_rate
           const level = parseInt(row.original.range_label.replace('%', ''))
 
+          // NAMED CONDITIONS for Progress bar color
+          const isCriticalDrawdown = level <= CRITICAL_DRAWDOWN_THRESHOLD
+          const isSevereDrawdown = level <= SEVERE_DRAWDOWN_THRESHOLD
+          const isModerateDrawdown = level <= MODERATE_DRAWDOWN_THRESHOLD
+
           return (
             <div className="ml-auto flex w-full max-w-[100px] flex-col items-end gap-1.5">
               <span
                 className={cn(
                   'text-[11px] font-bold tabular-nums',
-                  level <= -70 ? 'text-orange-600' : 'text-muted-foreground'
+                  isCriticalDrawdown ? 'text-orange-600' : 'text-muted-foreground'
                 )}
               >
                 {formatPercent(value)}
@@ -110,11 +128,11 @@ export default function RecoveryTable({
                 value={value * 100}
                 className={cn(
                   'h-1',
-                  level <= -70
+                  isCriticalDrawdown
                     ? '[&>div]:bg-orange-500'
-                    : level <= -50
+                    : isSevereDrawdown
                       ? '[&>div]:bg-purple-500'
-                      : level <= -20
+                      : isModerateDrawdown
                         ? '[&>div]:bg-blue-500'
                         : ''
                 )}
@@ -132,7 +150,13 @@ export default function RecoveryTable({
             row.original.range_label.replace('%', '')
           )
           const level = levelPercent / 100
-          const isCurrent = Math.abs(currentDrawdown - level) < 0.025
+          const isCurrent = Math.abs(currentDrawdown - level) < CURRENT_POSITION_TOLERANCE
+
+          // NAMED CONDITIONS for strategy messages
+          const isExtremeOpportunity = levelPercent <= CRITICAL_DRAWDOWN_THRESHOLD
+          const isHistoricalOpportunity = levelPercent <= SEVERE_DRAWDOWN_THRESHOLD
+          const isAggressiveExpansion = levelPercent <= AGGRESSIVE_EXPANSION_THRESHOLD
+          const isPhasedBuying = levelPercent <= PHASED_BUYING_THRESHOLD
 
           if (isCurrent)
             return (
@@ -145,25 +169,25 @@ export default function RecoveryTable({
               </Badge>
             )
 
-          if (levelPercent <= -70)
+          if (isExtremeOpportunity)
             return (
               <span className="text-[11px] font-black text-orange-600 uppercase dark:text-orange-400">
                 인생을 건 매수
               </span>
             )
-          if (levelPercent <= -50)
+          if (isHistoricalOpportunity)
             return (
               <span className="text-[11px] font-black text-purple-600 dark:text-purple-400">
                 역사적 기회 (풀매수)
               </span>
             )
-          if (levelPercent <= -30)
+          if (isAggressiveExpansion)
             return (
               <span className="flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400">
                 공격적 비중 확대
               </span>
             )
-          if (levelPercent <= -15)
+          if (isPhasedBuying)
             return (
               <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
                 분할 매수 유효
@@ -217,7 +241,7 @@ export default function RecoveryTable({
           stickyFirstColumn
           getRowClassName={(row) => {
             const level = parseInt(row.range_label.replace('%', '')) / 100
-            return Math.abs(currentDrawdown - level) < 0.025
+            return Math.abs(currentDrawdown - level) < CURRENT_POSITION_TOLERANCE
               ? 'bg-emerald-500/5 dark:bg-emerald-500/10 ring-1 ring-inset ring-emerald-500/20'
               : ''
           }}

@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+import * as echarts from 'echarts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -10,6 +12,7 @@ import {
 } from '@/components/ui/tooltip'
 import { formatPercent } from '@/lib/format'
 import type { BuySignal, RawApiResponse } from '@/lib/types'
+import type { CallbackDataParams } from 'echarts/types/dist/shared'
 import { cn } from '@/lib/utils'
 import {
   Info,
@@ -21,6 +24,8 @@ import {
   BarChart2,
   MousePointerClick,
 } from 'lucide-react'
+import { useAtomValue } from 'jotai'
+import { themeAtom } from '@/lib/theme'
 
 interface BuySignalPanelProps {
   signals: RawApiResponse['buy_signal']
@@ -59,6 +64,136 @@ const SIGNAL_GUIDE = [
   },
 ]
 
+const SIGNAL_ICONS: Record<number, React.ReactNode> = {
+  1: <AlertCircle className="h-5 w-5 text-red-500" />,
+  2: <Info className="h-5 w-5 text-slate-400" />,
+  3: <ShieldCheck className="h-5 w-5 text-sky-500" />,
+  4: <Zap className="h-5 w-5 text-blue-600" />,
+  5: <TrendingUp className="h-5 w-5 text-purple-600" />,
+}
+
+function DistributionChart({ signal }: { signal: BuySignal }) {
+  const chartRef = useRef<HTMLDivElement>(null)
+  const theme = useAtomValue(themeAtom)
+
+  useEffect(() => {
+    if (!chartRef.current) return
+    const chart = echarts.init(
+      chartRef.current,
+      theme === 'dark' ? 'dark' : undefined
+    )
+
+    const worst = (signal.worst_return_1y ?? -0.5) * 100
+    const best = (signal.best_return_1y ?? 1) * 100
+    const current = (signal.historical_return_1y ?? 0) * 100
+
+    const option: echarts.EChartsOption = {
+      backgroundColor: 'transparent',
+      grid: { top: 10, bottom: 25, left: 10, right: 10 },
+      xAxis: {
+        type: 'value',
+        min: Math.min(worst, 0) - 10,
+        max: Math.max(best, 0) + 10,
+        axisLabel: { show: true, fontSize: 9, formatter: '{value}%' },
+        splitLine: { show: false },
+        axisLine: { show: true, lineStyle: { color: '#ccc' } },
+      },
+      yAxis: { type: 'category', show: false },
+      series: [
+        {
+          name: 'offset',
+          type: 'bar',
+          stack: 'all',
+          silent: true,
+          data: [worst],
+          itemStyle: {
+            color: 'transparent',
+          },
+          barWidth: 8,
+        },
+        {
+          name: 'range',
+          type: 'bar',
+          stack: 'all',
+          silent: true,
+          data: [best - worst],
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: '#ef4444' },
+              { offset: 0.5, color: '#3b82f6' },
+              { offset: 1, color: '#10b981' },
+            ]),
+            borderRadius: 10,
+            opacity: 0.3,
+          },
+          barWidth: 8,
+        },
+        {
+          name: 'Average',
+          type: 'scatter',
+          symbol: 'diamond',
+          symbolSize: 14,
+          data: [[current, 0]],
+          itemStyle: {
+            color: '#3b82f6',
+            shadowBlur: 5,
+            shadowColor: 'rgba(0,0,0,0.3)',
+          },
+          label: {
+            show: true,
+            position: 'top',
+            formatter: (params: CallbackDataParams) => {
+              const data = params.data as number[]
+              return `AVG: ${data[0].toFixed(1)}%`
+            },
+            fontSize: 10,
+            fontWeight: 'bold',
+          },
+        },
+        {
+          name: 'Worst',
+          type: 'scatter',
+          symbol: 'circle',
+          symbolSize: 8,
+          data: [[worst, 0]],
+          itemStyle: { color: '#ef4444' },
+          label: {
+            show: true,
+            position: 'bottom',
+            formatter: 'Worst',
+            fontSize: 9,
+          },
+        },
+        {
+          name: 'Best',
+          type: 'scatter',
+          symbol: 'circle',
+          symbolSize: 8,
+          data: [[best, 0]],
+          itemStyle: { color: '#10b981' },
+          label: {
+            show: true,
+            position: 'bottom',
+            formatter: 'Best',
+            fontSize: 9,
+          },
+        },
+      ],
+    }
+
+    chart.setOption(option)
+    const handleResize = () => chart.resize()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      chart.dispose()
+    }
+  }, [signal, theme])
+
+  return <div ref={chartRef} className="h-[80px] w-full" />
+}
+
 function SignalCard({
   title,
   signal,
@@ -72,21 +207,6 @@ function SignalCard({
     (signal.win_rate_1y ?? 0) - (signal.baseline_win_rate_1y ?? 0)
   const returnEdge =
     (signal.historical_return_1y ?? 0) - (signal.baseline_return_1y ?? 0)
-
-  const getIcon = () => {
-    switch (signal.level) {
-      case 1:
-        return <AlertCircle className="h-5 w-5 text-red-500" />
-      case 2:
-        return <Info className="h-5 w-5 text-slate-400" />
-      case 3:
-        return <ShieldCheck className="h-5 w-5 text-sky-500" />
-      case 4:
-        return <Zap className="h-5 w-5 text-blue-600" />
-      case 5:
-        return <TrendingUp className="h-5 w-5 text-purple-600" />
-    }
-  }
 
   return (
     <Card className="bg-card/40 group hover:bg-card/50 relative overflow-hidden border-none shadow-xl backdrop-blur-md transition-all">
@@ -123,7 +243,7 @@ function SignalCard({
             </Tooltip>
           </TooltipProvider>
         </div>
-        {getIcon()}
+        {SIGNAL_ICONS[signal.level]}
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -190,152 +310,94 @@ function SignalCard({
           <div className="grid grid-cols-2 gap-3">
             <TooltipProvider>
               {/* Win Rate Card */}
-              <div className="bg-muted/20 border-border/50 group/card space-y-2 rounded-2xl border p-4">
-                <p className="text-muted-foreground text-[10px] font-bold uppercase">
-                  1년 뒤 승률
-                </p>
-                <div className="flex items-baseline gap-1.5">
-                  <p className="text-2xl font-black text-emerald-500 tabular-nums">
-                    {signal.win_rate_1y !== null
-                      ? formatPercent(signal.win_rate_1y)
-                      : '-'}
+              <Card className="bg-muted/20 border-border/50 group/card rounded-2xl border">
+                <CardHeader className="space-y-2 p-4 pb-2">
+                  <CardTitle className="text-muted-foreground text-[10px] font-bold uppercase">
+                    1년 뒤 승률
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 p-4 pt-0">
+                  <div className="flex items-baseline gap-1.5">
+                    <p className="text-2xl font-black text-emerald-500 tabular-nums">
+                      {signal.win_rate_1y !== null
+                        ? formatPercent(signal.win_rate_1y)
+                        : '-'}
+                    </p>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant={winRateEdge >= 0 ? 'success' : 'destructive'}
+                          className="px-1.5 py-0 text-[9px] font-bold"
+                        >
+                          {winRateEdge >= 0 ? '+' : ''}
+                          {formatPercent(winRateEdge)}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        평상시 승률(
+                        {formatPercent(signal.baseline_win_rate_1y ?? null)})
+                        대비 추가 승률
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <p className="text-muted-foreground text-[9px] font-medium leading-tight">
+                    아무 때나 샀을 때보다{' '}
+                    <span className="text-foreground font-bold">
+                      {formatPercent(Math.abs(winRateEdge))}
+                    </span>{' '}
+                    {winRateEdge >= 0 ? '유리함' : '불리함'}
                   </p>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge
-                        variant={winRateEdge >= 0 ? 'success' : 'destructive'}
-                        className="px-1.5 py-0 text-[9px] font-bold"
-                      >
-                        {winRateEdge >= 0 ? '+' : ''}
-                        {formatPercent(winRateEdge)}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      평상시 승률(
-                      {formatPercent(signal.baseline_win_rate_1y ?? null)}) 대비
-                      추가 승률
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <p className="text-muted-foreground text-[9px] leading-tight font-medium">
-                  아무 때나 샀을 때보다{' '}
-                  <span className="text-foreground font-bold">
-                    {formatPercent(Math.abs(winRateEdge))}
-                  </span>{' '}
-                  {winRateEdge >= 0 ? '유리함' : '불리함'}
-                </p>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Return Card */}
-              <div className="bg-primary/5 border-primary/10 space-y-2 rounded-2xl border p-4">
-                <p className="text-primary text-[10px] font-bold uppercase">
-                  1년 뒤 기대 수익
-                </p>
-                <div className="flex items-baseline gap-1.5">
-                  <p className="text-primary text-2xl font-black tabular-nums">
-                    {signal.historical_return_1y !== null
-                      ? `+${formatPercent(signal.historical_return_1y)}`
-                      : '-'}
+              <Card className="bg-primary/5 border-primary/10 rounded-2xl border">
+                <CardHeader className="space-y-2 p-4 pb-2">
+                  <CardTitle className="text-primary text-[10px] font-bold uppercase">
+                    1년 뒤 기대 수익
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 p-4 pt-0">
+                  <div className="flex items-baseline gap-1.5">
+                    <p className="text-primary text-2xl font-black tabular-nums">
+                      {signal.historical_return_1y !== null
+                        ? `+${formatPercent(signal.historical_return_1y)}`
+                        : '-'}
+                    </p>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant={returnEdge >= 0 ? 'success' : 'destructive'}
+                          className="bg-primary/10 text-primary border-none px-1.5 py-0 text-[9px] font-bold"
+                        >
+                          {returnEdge >= 0 ? '+' : ''}
+                          {formatPercent(returnEdge)}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        평상시 수익률(+
+                        {formatPercent(signal.baseline_return_1y ?? null)}) 대비
+                        추가 수익
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <p className="text-muted-foreground text-[9px] font-medium leading-tight">
+                    평소보다{' '}
+                    <span className="text-foreground font-bold">
+                      {formatPercent(Math.abs(returnEdge))}
+                    </span>{' '}
+                    {returnEdge >= 0 ? '더 벌었음' : '덜 벌림'}
                   </p>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge
-                        variant={returnEdge >= 0 ? 'success' : 'destructive'}
-                        className="bg-primary/10 text-primary border-none px-1.5 py-0 text-[9px] font-bold"
-                      >
-                        {returnEdge >= 0 ? '+' : ''}
-                        {formatPercent(returnEdge)}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      평상시 수익률(+
-                      {formatPercent(signal.baseline_return_1y ?? null)}) 대비
-                      추가 수익
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <p className="text-muted-foreground text-[9px] leading-tight font-medium">
-                  평소보다{' '}
-                  <span className="text-foreground font-bold">
-                    {formatPercent(Math.abs(returnEdge))}
-                  </span>{' '}
-                  {returnEdge >= 0 ? '더 벌었음' : '덜 벌림'}
-                </p>
-              </div>
+                </CardContent>
+              </Card>
             </TooltipProvider>
           </div>
 
-          {/* Range Display with Tooltips */}
-          <div className="space-y-3 px-1 pt-2">
-            <div className="flex justify-between text-[10px] font-bold tracking-tighter uppercase">
-              <span className="text-destructive">Worst Case</span>
-              <span className="text-muted-foreground">
-                과거 1년 뒤 수익률 분포
-              </span>
-              <span className="text-emerald-500">Best Case</span>
-            </div>
-
-            <TooltipProvider>
-              <div className="relative flex h-6 items-center">
-                <div className="bg-muted absolute h-1.5 w-full overflow-hidden rounded-full">
-                  <div className="from-destructive via-primary absolute h-full w-full bg-gradient-to-r to-emerald-500 opacity-40" />
-                </div>
-
-                <div
-                  className="bg-foreground/20 absolute z-0 h-3 w-px"
-                  style={{
-                    left: `${((0 - (signal.worst_return_1y ?? -0.5)) / ((signal.best_return_1y ?? 1) - (signal.worst_return_1y ?? -0.5))) * 100}%`,
-                  }}
-                />
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className="bg-destructive border-background absolute z-10 h-3 w-3 cursor-help rounded-full border-2 shadow-sm"
-                      style={{ left: `0%` }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    역사적 최악의 사례: {formatPercent(signal.worst_return_1y)}
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className="bg-primary border-background absolute z-20 h-4 w-4 cursor-help rounded-full border-2 shadow-md"
-                      style={{
-                        left: `${(((signal.historical_return_1y ?? 0) - (signal.worst_return_1y ?? 0)) / ((signal.best_return_1y ?? 1) - (signal.worst_return_1y ?? 0))) * 100}%`,
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    평균 수익률: +{formatPercent(signal.historical_return_1y)}
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className="border-background absolute z-10 h-3 w-3 cursor-help rounded-full border-2 bg-emerald-500 shadow-sm"
-                      style={{ left: `100%` }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    역사적 최고의 사례: +{formatPercent(signal.best_return_1y)}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </TooltipProvider>
-
-            <div className="flex justify-between text-[11px] font-black tabular-nums">
-              <span className="text-destructive">
-                {formatPercent(signal.worst_return_1y)}
-              </span>
-              <span className="text-emerald-500">
-                +{formatPercent(signal.best_return_1y)}
-              </span>
-            </div>
+          <div className="space-y-1 px-1 pt-2">
+            <p className="text-muted-foreground text-center text-[10px] font-bold uppercase">
+              과거 1년 뒤 수익률 분포
+            </p>
+            <DistributionChart signal={signal} />
           </div>
         </div>
 
