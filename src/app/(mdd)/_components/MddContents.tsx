@@ -3,12 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import ControlPanel from '@/app/(mdd)/_components/ControlPanel'
 import MethodologyGuide from '@/app/(mdd)/_components/MethodologyGuide'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { useMddQuery } from '@/app/(mdd)/_hooks/useMddQuery'
 import { MddQueryInputSchema } from '@/app/(mdd)/_lib/schemas'

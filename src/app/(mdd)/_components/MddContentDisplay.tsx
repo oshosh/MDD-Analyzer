@@ -2,19 +2,11 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import ControlPanel from '@/app/(mdd)/_components/ControlPanel'
-import MethodologyGuide from '@/app/(mdd)/_components/MethodologyGuide'
 import RawTable from '@/app/(mdd)/_components/RawTable'
 import RecoveryTable from '@/app/(mdd)/_components/RecoveryTable'
 import SummaryTable from '@/app/(mdd)/_components/SummaryTable'
 import ValidationPanel from '@/app/(mdd)/_components/ValidationPanel'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import { RawApiResponse } from '@/lib/types'
 
@@ -32,11 +24,11 @@ const ChartsPanel = dynamic(
 )
 
 interface MddContentDisplayProps {
-    data: RawApiResponse;
-    query: MddQueryInput;
+  data: RawApiResponse
+  query: MddQueryInput
 }
 
-export default function MddContentDisplay({ data, query }: MddContentDisplayProps) {
+export default function MddContentDisplay({ data }: MddContentDisplayProps) {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-col gap-8 duration-700">
       <SummaryTable summary={data.summary} meta={data.meta} />

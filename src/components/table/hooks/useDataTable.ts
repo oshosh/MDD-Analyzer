@@ -1,7 +1,6 @@
 'use client'
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { useRef } from 'react'
 
 import { useTanstackTable } from './useTanstackTable'
 import { useTanstackVirtualizer } from './useTanstackVirtualizer'

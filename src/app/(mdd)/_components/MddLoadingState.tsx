@@ -1,8 +1,4 @@
-// src/app/(mdd)/_components/MddLoadingState.tsx
 'use client'
-
-import { Skeleton } from '@/components/ui/skeleton'
-import { Card } from '@/components/ui/card'
 
 export default function MddLoadingState() {
   return (

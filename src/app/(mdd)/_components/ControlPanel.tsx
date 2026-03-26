@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import type { StylesConfig } from 'react-select'
-import { todayIso } from '@/lib/date'
 import { browserApiClient } from '@/lib/http/axios'
 import {
   Select,
@@ -17,10 +16,6 @@ import type { Instrument, IntervalType } from '@/lib/types'
 import type { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import { Calendar, BarChart3, ArrowRight } from 'lucide-react'
 import { useSymbolDates } from '@/app/(mdd)/_hooks/useSymbolDates' // NEW IMPORT
-
-interface ListingResponse {
-  listing_date: string
-}
 
 interface SearchResponse {
   rows: Instrument[]
@@ -193,14 +188,15 @@ export default function ControlPanel({ value }: ControlPanelProps) {
           try {
             const nextSymbol = symbolInput.trim().toUpperCase()
             if (!nextSymbol) return
-            
+
             // Replaced the conditional date fetching logic with useSymbolDates hook
-            const { from: resolvedFrom, to: resolvedTo } = await getDatesForSymbol(
-              nextSymbol,
-              value.symbol, // current symbol in URL to check if it's new
-              from,           // current 'from' in form
-              to              // current 'to' in form
-            )
+            const { from: resolvedFrom, to: resolvedTo } =
+              await getDatesForSymbol(
+                nextSymbol,
+                value.symbol, // current symbol in URL to check if it's new
+                from, // current 'from' in form
+                to // current 'to' in form
+              )
 
             const params = new URLSearchParams({
               symbol: nextSymbol,
