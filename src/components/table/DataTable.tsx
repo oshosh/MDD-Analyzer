@@ -22,6 +22,7 @@ interface DataTableProps<TData extends object> {
   virtualized?: boolean
   getRowClassName?: (row: TData) => string
   stickyFirstColumn?: boolean
+  onRowClick?: (row: TData) => void
 }
 
 export default function DataTable<TData extends object>({
@@ -33,6 +34,7 @@ export default function DataTable<TData extends object>({
   virtualized = false,
   getRowClassName,
   stickyFirstColumn = false,
+  onRowClick,
 }: DataTableProps<TData>) {
   const {
     table,
@@ -48,25 +50,34 @@ export default function DataTable<TData extends object>({
 
   const renderRow = (row: Row<TData>, isVirtual: boolean = false, virtualItem?: VirtualItem) => {
     const rowClass = getRowClassName?.(row.original) ?? '';
+    const visibleColumns = table.getVisibleLeafColumns()
 
     return (
       <TableRow
         key={row.id}
-        data-index={isVirtual ? virtualItem?.index : undefined}
+        data-index={isVirtual ? virtualItem?.index : row.index}
         ref={isVirtual && virtualItem ? (node) => rowVirtualizer.measureElement(node) : undefined}
         className={cn('group hover:bg-muted/50 transition-colors', rowClass)}
         style={{ height: rowHeight }}
+        onClick={() => onRowClick?.(row.original)}
       >
         {row.getVisibleCells().map((cell) => {
-          const isSticky = stickyFirstColumn && cell.column.id === table.getVisibleLeafColumns()[0]?.id;
+          const stickyIndex = visibleColumns.findIndex((column) => column.id === cell.column.id)
+          const isSticky = stickyFirstColumn && stickyIndex >= 0 && stickyIndex <= 1
+          const stickyLeft = isSticky
+            ? visibleColumns
+                .slice(0, stickyIndex)
+                .reduce((sum, column) => sum + column.getSize(), 0)
+            : undefined
           const cellMeta = cell.column.columnDef.meta as { className?: string } | undefined;
           return (
             <TableCell
               key={cell.id}
+              style={isSticky ? { left: stickyLeft } : undefined}
               className={cn(
-                'h-full px-2 py-1.5',
+                'h-full px-2 py-1.5 bg-card',
                 cellMeta?.className,
-                isSticky && 'sticky left-0 bg-background/95 backdrop-blur-sm'
+                isSticky && 'sticky z-30 shadow-[1px_0_0_hsl(var(--border))]'
               )}
             >
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -97,19 +108,24 @@ export default function DataTable<TData extends object>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                const isSticky =
-                  stickyFirstColumn &&
-                  header.id === table.getVisibleLeafColumns()[0]?.id
+                const visibleColumns = table.getVisibleLeafColumns()
+                const stickyIndex = visibleColumns.findIndex((column) => column.id === header.column.id)
+                const isSticky = stickyFirstColumn && stickyIndex >= 0 && stickyIndex <= 1
+                const stickyLeft = isSticky
+                  ? visibleColumns
+                      .slice(0, stickyIndex)
+                      .reduce((sum, column) => sum + column.getSize(), 0)
+                  : undefined
                 return (
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
-                    style={{ width: header.getSize() }}
+                    style={{ width: header.getSize(), ...(isSticky ? { left: stickyLeft } : {}) }}
                     className={cn(
-                      'group relative z-10 px-2 py-2 text-left font-bold uppercase text-muted-foreground',
+                      'group relative z-20 bg-card px-2 py-2 text-left font-bold uppercase text-muted-foreground',
                       header.column.getCanSort() && 'cursor-pointer select-none',
                       isSticky &&
-                        'sticky left-0 bg-background/95 backdrop-blur-sm'
+                        'sticky z-40 shadow-[1px_0_0_hsl(var(--border))]'
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >

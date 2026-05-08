@@ -207,6 +207,7 @@ function resolveYahooSymbol(asset: AssetType, symbol: string): string {
     if (upper.endsWith('.KS') || upper.endsWith('.KQ')) {
       return upper
     }
+    // 6자리 숫자인 경우 기본적으로 .KS를 붙이지만, 스팩 서비스에서는 .KQ를 명시적으로 넘겨야 함
     if (/^\d{6}$/.test(upper)) {
       return `${upper}.KS`
     }

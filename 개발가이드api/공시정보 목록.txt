@@ -1,0 +1,112 @@
+<div id="contents"> 
+		
+			<!-- 컨텐츠 확대 축소 -->
+			<div class="btn_wide_on"></div>
+			<div class="btn_wide_off"></div>
+			
+			<!-- 메인컨텐츠 영역 시작 -->
+			
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+$(document).ready(function(){
+	
+	
+});
+</script>
+
+
+	
+		
+	
+	
+	
+	
+	
+	
+
+
+<!-- 타이틀 -->
+<div class="head_tit">
+	<h3>공시정보 목록</h3>
+	<ul class="navy">
+		<li class="home"><img src="/images/ico_head_title_home.png" alt="홈"></li>
+		<li>개발가이드</li>
+		<li>공시정보목록</li>
+	</ul>
+</div>
+<div class="topImg03"></div>
+
+<!-- 리스트 -->
+<div class="list_area">
+	<table class="tb01" summary="번호,IP,상태 순으로 구성되어 있습니다.">
+		<caption>공시정보 테이블</caption>
+		<colgroup>
+				<col width="10%">
+				<col width="30%">
+				<col width="45%">
+				<col width="15%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" class="ipNo"><label>번호</label></th>
+				<th scope="col"><label>API명</label></th>
+				<th scope="col"><label>상세기능</label></th>
+				<th scope="col"><label>개발가이드</label></th>
+			</tr>
+		</thead>
+		<tbody>
+				
+					
+						
+							<tr>
+								<td>1</td>
+								<td>공시검색</td>
+								<td class="tl">공시 유형별, 회사별, 날짜별 등 여러가지 조건으로 공시보고서 검색기능을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS001&amp;apiId=2019001" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>2</td>
+								<td>기업개황</td>
+								<td class="tl">DART에 등록되어있는 기업의 개황정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS001&amp;apiId=2019002" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>3</td>
+								<td>공시서류원본파일</td>
+								<td class="tl">공시보고서 원본파일을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS001&amp;apiId=2019003" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>4</td>
+								<td>고유번호</td>
+								<td class="tl">DART에 등록되어있는 공시대상회사의 고유번호,회사명,종목코드, 최근변경일자를 파일로 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS001&amp;apiId=2019018" class="link">바로가기</a></td>
+							</tr> 
+						
+					
+					
+				
+		</tbody>
+	</table>
+</div>
+
+<!-- //리스트 -->
+
+
+
+
+<div>
+</div>
+			<!-- 메인컨텐츠 영역 끝 -->	
+			
+		</div>

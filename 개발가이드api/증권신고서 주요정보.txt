@@ -1,0 +1,131 @@
+<div id="contents"> 
+		
+			<!-- 컨텐츠 확대 축소 -->
+			<div class="btn_wide_on"></div>
+			<div class="btn_wide_off"></div>
+			
+			<!-- 메인컨텐츠 영역 시작 -->
+			
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+$(document).ready(function(){
+	
+	
+});
+</script>
+
+
+	
+	
+	
+	
+	
+	
+		
+	
+
+
+<!-- 타이틀 -->
+<div class="head_tit">
+	<h3>증권신고서 주요정보 목록</h3>
+	<ul class="navy">
+		<li class="home"><img src="/images/ico_head_title_home.png" alt="홈"></li>
+		<li>개발가이드</li>
+		<li>증권신고서 주요정보목록</li>
+	</ul>
+</div>
+<div class="topImg03"></div>
+
+<!-- 리스트 -->
+<div class="list_area">
+	<table class="tb01" summary="번호,IP,상태 순으로 구성되어 있습니다.">
+		<caption>공시정보 테이블</caption>
+		<colgroup>
+				<col width="10%">
+				<col width="30%">
+				<col width="45%">
+				<col width="15%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" class="ipNo"><label>번호</label></th>
+				<th scope="col"><label>API명</label></th>
+				<th scope="col"><label>상세기능</label></th>
+				<th scope="col"><label>개발가이드</label></th>
+			</tr>
+		</thead>
+		<tbody>
+				
+					
+						
+							<tr>
+								<td>1</td>
+								<td>지분증권</td>
+								<td class="tl">증권신고서(지분증권) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020054" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>2</td>
+								<td>채무증권</td>
+								<td class="tl">증권신고서(채무증권) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020055" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>3</td>
+								<td>증권예탁증권</td>
+								<td class="tl">증권신고서(증권예탁증권) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020056" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>4</td>
+								<td>합병</td>
+								<td class="tl">증권신고서(합병) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020057" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>5</td>
+								<td>주식의포괄적교환·이전</td>
+								<td class="tl">증권신고서(주식의포괄적교환·이전) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020058" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>6</td>
+								<td>분할</td>
+								<td class="tl">증권신고서(분할) 내에 요약 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS006&amp;apiId=2020059" class="link">바로가기</a></td>
+							</tr> 
+						
+					
+					
+				
+		</tbody>
+	</table>
+</div>
+
+<!-- //리스트 -->
+
+<div class="infoBox" title="유의사항">
+	상기 조회내용은 회사가 제출한 공시서류의 <span class="em">일부정보</span>를 추출하여 제공하는 것으로 금융감독원은 정보의 정확성 및 완전성을 보장하지 않습니다. 
+	<br>자세한 사항은 해당 <span class="em">보고서</span>를 참조하시기 바랍니다.
+</div>
+
+
+
+
+<div>
+</div>
+			<!-- 메인컨텐츠 영역 끝 -->	
+			
+		</div>

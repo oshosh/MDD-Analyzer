@@ -15,6 +15,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.cache/
+extract_*/
 
 # Environment Variables (Secrets)
 .env
@@ -63,3 +65,5 @@ desktop.ini
 test.md
 
 .gemini/refactors
+
+*.tsbuildinfo

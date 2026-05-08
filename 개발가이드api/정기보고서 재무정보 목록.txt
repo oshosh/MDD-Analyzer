@@ -1,0 +1,141 @@
+<div id="contents"> 
+		
+			<!-- 컨텐츠 확대 축소 -->
+			<div class="btn_wide_on"></div>
+			<div class="btn_wide_off"></div>
+			
+			<!-- 메인컨텐츠 영역 시작 -->
+			
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+$(document).ready(function(){
+	
+	
+});
+</script>
+
+
+	
+	
+	
+		
+	
+	
+	
+	
+
+
+<!-- 타이틀 -->
+<div class="head_tit">
+	<h3>정기보고서 재무정보 목록</h3>
+	<ul class="navy">
+		<li class="home"><img src="/images/ico_head_title_home.png" alt="홈"></li>
+		<li>개발가이드</li>
+		<li>정기보고서 재무정보목록</li>
+	</ul>
+</div>
+<div class="topImg03"></div>
+
+<!-- 리스트 -->
+<div class="list_area">
+	<table class="tb01" summary="번호,IP,상태 순으로 구성되어 있습니다.">
+		<caption>공시정보 테이블</caption>
+		<colgroup>
+				<col width="10%">
+				<col width="30%">
+				<col width="45%">
+				<col width="15%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" class="ipNo"><label>번호</label></th>
+				<th scope="col"><label>API명</label></th>
+				<th scope="col"><label>상세기능</label></th>
+				<th scope="col"><label>개발가이드</label></th>
+			</tr>
+		</thead>
+		<tbody>
+				
+					
+						
+							<tr>
+								<td>1</td>
+								<td>단일회사 주요계정</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 주요계정과목(재무상태표, 손익계산서)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2019016" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>2</td>
+								<td>다중회사 주요계정</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 주요계정과목(재무상태표, 손익계산서)을 제공합니다.
+(대상법인 복수조회 복수조회 가능)</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2019017" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>3</td>
+								<td>재무제표 원본파일(XBRL)</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 원본파일(XBRL)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2019019" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>4</td>
+								<td>단일회사 전체 재무제표</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 모든계정과목을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2019020" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>5</td>
+								<td>XBRL택사노미재무제표양식</td>
+								<td class="tl">금융감독원 회계포탈에서 제공하는 IFRS 기반 XBRL 재무제표 공시용 표준계정과목체계(계정과목) 을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2020001" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>6</td>
+								<td>단일회사 주요 재무지표</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 주요 재무지표를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2022001" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>7</td>
+								<td>다중회사 주요 재무지표</td>
+								<td class="tl">상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)이 제출한 정기보고서 내에 XBRL재무제표의 주요 재무지표를 제공합니다.(대상법인 복수조회 가능)</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS003&amp;apiId=2022002" class="link">바로가기</a></td>
+							</tr> 
+						
+					
+					
+				
+		</tbody>
+	</table>
+</div>
+
+<!-- //리스트 -->
+
+
+
+<div class="infoBox" title="유의사항">
+	재무제표는 IFRS XBRL 편집기를 사용하여 제출한 
+	<span class="em"> 상장법인(유가증권, 코스닥) 및 주요 비상장법인(사업보고서 제출대상 &amp; IFRS 적용)의 재무제표</span>를 제공합니다. 
+	재무제표는 <span class="em">공시의무자인 제출인의 책임</span>하에 작성되었으며, 금융감독원이 이 정보의 정확성 및 완전성을 보장하는 것은 아닙니다. <br>
+	기준일자 이후로 제출인이 재무제표를 정정할 경우 수치가 변경될 수 있습니다.
+</div>
+
+
+<div>
+</div>
+			<!-- 메인컨텐츠 영역 끝 -->	
+			
+		</div>

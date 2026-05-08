@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import type { PropsWithChildren } from 'react'
 import AppProviders from '@/components/provider/AppProviders'
+import { Navigation } from '@/components/shared/Navigation'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -108,7 +109,10 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <Navigation />
+          {children}
+        </AppProviders>
       </body>
     </html>
   )

@@ -1,0 +1,285 @@
+<div id="contents"> 
+		
+			<!-- 컨텐츠 확대 축소 -->
+			<div class="btn_wide_on"></div>
+			<div class="btn_wide_off"></div>
+			
+			<!-- 메인컨텐츠 영역 시작 -->
+			
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+$(document).ready(function(){
+	
+	
+});
+</script>
+
+
+	
+	
+		
+	
+	
+	
+	
+	
+
+
+<!-- 타이틀 -->
+<div class="head_tit">
+	<h3>정기보고서 주요정보 목록</h3>
+	<ul class="navy">
+		<li class="home"><img src="/images/ico_head_title_home.png" alt="홈"></li>
+		<li>개발가이드</li>
+		<li>정기보고서 주요정보목록</li>
+	</ul>
+</div>
+<div class="topImg03"></div>
+
+<!-- 리스트 -->
+<div class="list_area">
+	<table class="tb01" summary="번호,IP,상태 순으로 구성되어 있습니다.">
+		<caption>공시정보 테이블</caption>
+		<colgroup>
+				<col width="10%">
+				<col width="30%">
+				<col width="45%">
+				<col width="15%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" class="ipNo"><label>번호</label></th>
+				<th scope="col"><label>API명</label></th>
+				<th scope="col"><label>상세기능</label></th>
+				<th scope="col"><label>개발가이드</label></th>
+			</tr>
+		</thead>
+		<tbody>
+				
+					
+						
+							<tr>
+								<td>1</td>
+								<td>증자(감자) 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 증자(감자) 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019004" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>2</td>
+								<td>배당에 관한 사항</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 배당에 관한 사항을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019005" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>3</td>
+								<td>자기주식 취득 및 처분 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 자기주식 취득 및 처분 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019006" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>4</td>
+								<td>최대주주 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 최대주주 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019007" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>5</td>
+								<td>최대주주 변동현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 최대주주 변동현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019008" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>6</td>
+								<td>소액주주 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 소액주주 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019009" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>7</td>
+								<td>임원 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 임원 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019010" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>8</td>
+								<td>직원 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 직원 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019011" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>9</td>
+								<td>이사·감사의 개인별 보수현황(5억원 이상)</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 이사·감사의 개인별 보수현황(5억원 이상)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019012" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>10</td>
+								<td>이사·감사 전체의 보수현황(보수지급금액 - 이사·감사 전체)</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 이사·감사 전체의 보수현황(보수지급금액 - 이사·감사 전체)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019013" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>11</td>
+								<td>개인별 보수지급 금액(5억이상 상위5인) </td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 개인별 보수지급 금액(5억이상 상위5인)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019014" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>12</td>
+								<td>타법인 출자현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 타법인 출자현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2019015" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>13</td>
+								<td>주식의 총수 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 주식의총수현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020002" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>14</td>
+								<td>채무증권 발행실적</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 채무증권 발행실적을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020003" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>15</td>
+								<td>기업어음증권 미상환 잔액</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 기업어음증권 미상환 잔액을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020004" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>16</td>
+								<td>단기사채 미상환 잔액</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 단기사채 미상환 잔액을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020005" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>17</td>
+								<td>회사채 미상환 잔액</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 회사채 미상환 잔액을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020006" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>18</td>
+								<td>신종자본증권 미상환 잔액</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 신종자본증권 미상환 잔액을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020007" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>19</td>
+								<td>조건부 자본증권 미상환 잔액</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 조건부 자본증권 미상환 잔액을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020008" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>20</td>
+								<td>회계감사인의 명칭 및 감사의견</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 회계감사인의 명칭 및 감사의견을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020009" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>21</td>
+								<td>감사용역체결현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 감사용역체결현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020010" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>22</td>
+								<td>회계감사인과의 비감사용역 계약체결 현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 회계감사인과의 비감사용역 계약체결 현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020011" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>23</td>
+								<td>사외이사 및 그 변동현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 사외이사 및 그 변동현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020012" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>24</td>
+								<td>미등기임원 보수현황</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 미등기임원 보수현황을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020013" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>25</td>
+								<td>이사·감사 전체의 보수현황(주주총회 승인금액)</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 이사·감사 전체의 보수현황(주주총회 승인금액)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020014" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>26</td>
+								<td>이사·감사 전체의 보수현황(보수지급금액 - 유형별)</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 이사·감사 전체의 보수현황(보수지급금액 - 유형별)을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020015" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>27</td>
+								<td>공모자금의 사용내역</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 공모자금의 사용내역을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020016" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>28</td>
+								<td>사모자금의 사용내역</td>
+								<td class="tl">정기보고서(사업, 분기, 반기보고서) 내에 사모자금의 사용내역을 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS002&amp;apiId=2020017" class="link">바로가기</a></td>
+							</tr> 
+						
+					
+					
+				
+		</tbody>
+	</table>
+</div>
+
+<!-- //리스트 -->
+
+<div class="infoBox" title="유의사항">
+	상기 조회내용은 회사가 제출한 공시서류의 <span class="em">일부정보</span>를 추출하여 제공하는 것으로 금융감독원은 정보의 정확성 및 완전성을 보장하지 않습니다. 
+	<br>자세한 사항은 해당 <span class="em">보고서</span>를 참조하시기 바랍니다.
+</div>
+
+
+
+
+<div>
+</div>
+			<!-- 메인컨텐츠 영역 끝 -->	
+			
+		</div>

@@ -1,0 +1,76 @@
+# SPAC Data Rules
+
+이 파일은 국내 SPAC 연이율/청산가 기능을 수정할 때 먼저 확인하는 기준이다.
+
+## 작업 순서
+
+1. 먼저 이 파일과 `spec.md`를 읽는다.
+2. 로컬 캐시나 이전 추출 파일을 정답으로 보지 않는다.
+3. 값이 없거나 의심되면 OpenDART 공식 API와 원문 문서를 다시 조회한다.
+4. 종목명만 믿지 말고 `corpCode.xml`의 `stock_code -> corp_code` 매핑을 기준으로 조회한다.
+5. 특정 종목 검증은 접수번호, 공시명, 원문 근거를 같이 확인한다.
+
+## OpenDART 매핑
+
+- 고유번호: `corpCode.xml`
+- 공시 목록: `list.json`
+- 기업개황: `company.json`
+- 원문 문서: `document.xml`
+- 지분증권 증권신고서 요약: `estkRs.json`
+- 회사합병 결정: `cmpMgDecsn.json`
+- 증자/감자 현황: `irdsSttus.json`
+
+공시 목록 파라미터는 `bgn_de`, `end_de`를 사용한다. `corp_nm` 같은 비공식 검색 파라미터에 의존하지 않는다.
+
+## SPAC 필드별 원천
+
+- 종목코드/고유번호: `corpCode.xml`
+- 현재가/거래대금: 시장 데이터 API
+- 발행규모/공모가/주관사: `estkRs.json`
+- 상장일: `증권발행실적보고서` 원문 `상장일(매매개시일)`
+- 증자등기일: `irdsSttus.json` 우선, 없으면 발행실적보고서/증권신고서 원문
+- 예치이자율: 최초 증권신고서 원문 + `기업인수목적회사의예치ㆍ신탁계약내용변경` 원문 변경 이력
+- 대표 발기인: 해당 종목의 증권신고서 원문 표에서 추출
+- 합병 후보회사: `cmpMgDecsn.json`
+- 합병 단계/성공여부: `list.json` 공시명과 관련 원문
+- 관리종목지정일: `기타시장안내(관리종목지정우려종목)` 원문 지정일
+- 목록 포함 여부: 실제 상장폐지일이 지난 종목과 합병 성공 종목은 청산가 비교 목록에서 제외
+
+## 신한제11호스팩 기준값
+
+- 종목코드: `452980`
+- DART 고유번호: `01719105`
+- 상장일: `2023-10-04`
+- 증자등기일: `2023-09-26`
+- 발행규모: `360억원`
+- 예치이자율: `3.95%`, `3.30%`, `2.47%`
+- 관리종목지정일: `2026-03-23`
+- 실제 상장폐지일: `2026-05-07`
+- 표기용 상장폐지일(추정): `2026-05-04`
+- 청산일(보수): `2026-09-04`
+- 대표 발기인: `㈜지오원, 브릭인베스트먼트㈜`
+
+## 캐시 정책
+
+- DART 상세 캐시는 `src/server/services/dartCache.ts`가 관리한다.
+- 로컬 개발 기본 경로는 `.cache/dart_spac_cache.json`이다.
+- Vercel에서는 프로젝트 디렉터리가 영구 쓰기 저장소가 아니므로 `/tmp/mdd-cache`와 메모리 fallback을 사용한다.
+- 현재 상세 캐시 TTL은 `12시간`이고, `DART_CACHE_VERSION`이 바뀌면 무효화된다.
+- `corpCode.xml` 매핑은 프로세스 메모리에 `24시간` 캐시한다.
+- Vercel에서 여러 인스턴스/콜드스타트 사이에 캐시를 공유하려면 Vercel KV, Redis, Upstash 같은 외부 저장소가 필요하다.
+
+## 삭제 가능한 로컬 산출물
+
+- `extract_2024/`, `extract_2025/`, `extract_corp/`: 원문 확인용 다운로드 파일
+- `scripts/`: 조사용 일회성 스크립트
+- `.cache/`: 개발 캐시. 삭제하면 다음 첫 조회가 느려질 뿐 재생성된다.
+- `tsconfig.tsbuildinfo`: TypeScript 증분 빌드 산출물
+
+삭제하면 안 되는 파일:
+
+- `개발가이드api/`
+- `spec.md`
+- `src/server/services/spacService.ts`
+- `src/server/services/dartMapper.ts`
+- `src/server/services/dartCache.ts`
+- `src/app/spac/_lib/calculations.ts`

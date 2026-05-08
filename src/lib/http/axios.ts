@@ -28,16 +28,21 @@ function parseAxiosError(error: AxiosError): HttpApiError {
   const url = error.config?.url
   const payload = error.response?.data
 
-  const payloadMessage =
-    typeof payload === 'object' &&
-    payload !== null &&
-    'error' in payload &&
-    typeof (payload as { error?: unknown }).error === 'string'
-      ? (payload as { error: string }).error
-      : undefined
+  let message = error.message
 
-  const message = payloadMessage ?? error.message ?? `HTTP ${status}`
-  return new HttpApiError(message, status, { url, payload })
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    'error' in payload &&
+    typeof (payload as { error: string }).error === 'string'
+  ) {
+    message = (payload as { error: string }).error
+  }
+
+  return new HttpApiError(message, status, {
+    url: typeof url === 'string' ? url : undefined,
+    payload: payload as unknown,
+  })
 }
 
 function buildInstance(options?: ApiClientOptions): AxiosInstance {

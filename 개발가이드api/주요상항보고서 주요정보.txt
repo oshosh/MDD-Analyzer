@@ -1,0 +1,341 @@
+<div id="contents"> 
+		
+			<!-- 컨텐츠 확대 축소 -->
+			<div class="btn_wide_on"></div>
+			<div class="btn_wide_off"></div>
+			
+			<!-- 메인컨텐츠 영역 시작 -->
+			
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+$(document).ready(function(){
+	
+	
+});
+</script>
+
+
+	
+	
+	
+	
+	
+		
+	
+	
+
+
+<!-- 타이틀 -->
+<div class="head_tit">
+	<h3>주요사항보고서 주요정보 목록</h3>
+	<ul class="navy">
+		<li class="home"><img src="/images/ico_head_title_home.png" alt="홈"></li>
+		<li>개발가이드</li>
+		<li>주요사항보고서 주요정보목록</li>
+	</ul>
+</div>
+<div class="topImg03"></div>
+
+<!-- 리스트 -->
+<div class="list_area">
+	<table class="tb01" summary="번호,IP,상태 순으로 구성되어 있습니다.">
+		<caption>공시정보 테이블</caption>
+		<colgroup>
+				<col width="10%">
+				<col width="30%">
+				<col width="45%">
+				<col width="15%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" class="ipNo"><label>번호</label></th>
+				<th scope="col"><label>API명</label></th>
+				<th scope="col"><label>상세기능</label></th>
+				<th scope="col"><label>개발가이드</label></th>
+			</tr>
+		</thead>
+		<tbody>
+				
+					
+						
+							<tr>
+								<td>1</td>
+								<td>자산양수도(기타), 풋백옵션</td>
+								<td class="tl">주요사항보고서(자산양수도(기타), 풋백옵션) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020018" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>2</td>
+								<td>부도발생</td>
+								<td class="tl">주요사항보고서(부도발생) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020019" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>3</td>
+								<td>영업정지</td>
+								<td class="tl">주요사항보고서(영업정지) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020020" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>4</td>
+								<td>회생절차 개시신청</td>
+								<td class="tl">주요사항보고서(회생절차 개시신청) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020021" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>5</td>
+								<td>해산사유 발생</td>
+								<td class="tl">주요사항보고서(해산사유 발생) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020022" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>6</td>
+								<td>유상증자 결정</td>
+								<td class="tl">주요사항보고서(유상증자 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020023" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>7</td>
+								<td>무상증자 결정</td>
+								<td class="tl">주요사항보고서(무상증자 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020024" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>8</td>
+								<td>유무상증자 결정</td>
+								<td class="tl">주요사항보고서(유무상증자 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020025" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>9</td>
+								<td>감자 결정</td>
+								<td class="tl">주요사항보고서(감자 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020026" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>10</td>
+								<td>채권은행 등의 관리절차 개시</td>
+								<td class="tl">주요사항보고서(채권은행 등의 관리절차 개시) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020027" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>11</td>
+								<td>소송 등의 제기</td>
+								<td class="tl">주요사항보고서(소송 등의 제기) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020028" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>12</td>
+								<td>해외 증권시장 주권등 상장 결정</td>
+								<td class="tl">주요사항보고서(해외 증권시장 주권등 상장 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020029" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>13</td>
+								<td>해외 증권시장 주권등 상장폐지 결정</td>
+								<td class="tl">주요사항보고서(해외 증권시장 주권등 상장폐지 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020030" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>14</td>
+								<td>해외 증권시장 주권등 상장</td>
+								<td class="tl">주요사항보고서(해외 증권시장 주권등 상장) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020031" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>15</td>
+								<td>해외 증권시장 주권등 상장폐지</td>
+								<td class="tl">주요사항보고서(해외 증권시장 주권등 상장폐지) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020032" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>16</td>
+								<td>전환사채권 발행결정</td>
+								<td class="tl">주요사항보고서(전환사채권 발행결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020033" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>17</td>
+								<td>신주인수권부사채권 발행결정</td>
+								<td class="tl">주요사항보고서(신주인수권부사채권 발행결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020034" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>18</td>
+								<td>교환사채권 발행결정</td>
+								<td class="tl">주요사항보고서(교환사채권 발행결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020035" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>19</td>
+								<td>채권은행 등의 관리절차 중단</td>
+								<td class="tl">주요사항보고서(채권은행 등의 관리절차 중단) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020036" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>20</td>
+								<td>상각형 조건부자본증권 발행결정</td>
+								<td class="tl">주요사항보고서(상각형 조건부자본증권 발행결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020037" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>21</td>
+								<td>자기주식 취득 결정</td>
+								<td class="tl">주요사항보고서(자기주식 취득 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020038" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>22</td>
+								<td>자기주식 처분 결정</td>
+								<td class="tl">주요사항보고서(자기주식 처분 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020039" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>23</td>
+								<td>자기주식취득 신탁계약 체결 결정</td>
+								<td class="tl">주요사항보고서(자기주식취득 신탁계약 체결 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020040" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>24</td>
+								<td>자기주식취득 신탁계약 해지 결정</td>
+								<td class="tl">주요사항보고서(자기주식취득 신탁계약 해지 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020041" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>25</td>
+								<td>영업양수 결정</td>
+								<td class="tl">주요사항보고서(영업양수 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020042" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>26</td>
+								<td>영업양도 결정</td>
+								<td class="tl">주요사항보고서(영업양도 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020043" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>27</td>
+								<td>유형자산 양수 결정</td>
+								<td class="tl">주요사항보고서(유형자산 양수 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020044" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>28</td>
+								<td>유형자산 양도 결정</td>
+								<td class="tl">주요사항보고서(유형자산 양도 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020045" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>29</td>
+								<td>타법인 주식 및 출자증권 양수결정</td>
+								<td class="tl">주요사항보고서(타법인 주식 및 출자증권 양수결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020046" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>30</td>
+								<td>타법인 주식 및 출자증권 양도결정</td>
+								<td class="tl">주요사항보고서(타법인 주식 및 출자증권 양도결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020047" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>31</td>
+								<td>주권 관련 사채권 양수 결정</td>
+								<td class="tl">주요사항보고서(주권 관련 사채권 양수 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020048" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>32</td>
+								<td>주권 관련 사채권 양도 결정</td>
+								<td class="tl">주요사항보고서(주권 관련 사채권 양도 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020049" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>33</td>
+								<td>회사합병 결정</td>
+								<td class="tl">주요사항보고서(회사합병 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020050" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>34</td>
+								<td>회사분할 결정</td>
+								<td class="tl">주요사항보고서(회사분할 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020051" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>35</td>
+								<td>회사분할합병 결정</td>
+								<td class="tl">주요사항보고서(회사분할합병 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020052" class="link">바로가기</a></td>
+							</tr> 
+						
+							<tr>
+								<td>36</td>
+								<td>주식교환·이전 결정</td>
+								<td class="tl">주요사항보고서(주식교환·이전 결정) 내에 주요 정보를 제공합니다.</td>
+								<td><a href="/guide/detail.do?apiGrpCd=DS005&amp;apiId=2020053" class="link">바로가기</a></td>
+							</tr> 
+						
+					
+					
+				
+		</tbody>
+	</table>
+</div>
+
+<!-- //리스트 -->
+
+<div class="infoBox" title="유의사항">
+	상기 조회내용은 회사가 제출한 공시서류의 <span class="em">일부정보</span>를 추출하여 제공하는 것으로 금융감독원은 정보의 정확성 및 완전성을 보장하지 않습니다. 
+	<br>자세한 사항은 해당 <span class="em">보고서</span>를 참조하시기 바랍니다.
+</div>
+
+
+
+
+<div>
+</div>
+			<!-- 메인컨텐츠 영역 끝 -->	
+			
+		</div>
