@@ -6,6 +6,7 @@ import {
   differenceInDays,
   format,
 } from 'date-fns';
+import { getNextKoreanBusinessDayYmd } from 'korean-business-day';
 
 export interface SpacCalculations {
   managementDate: string; // 관리종목지정일
@@ -19,56 +20,18 @@ export interface SpacCalculations {
   annualYield: number; // 연이율 (%)
 }
 
-const KOREA_HOLIDAYS = new Set([
-  '2026-01-01',
-  '2026-02-16',
-  '2026-02-17',
-  '2026-02-18',
-  '2026-03-02',
-  '2026-05-05',
-  '2026-05-25',
-  '2026-06-03',
-  '2026-08-17',
-  '2026-09-24',
-  '2026-09-25',
-  '2026-09-26',
-  '2026-10-05',
-  '2026-10-09',
-  '2026-12-25',
-  '2027-01-01',
-  '2027-02-08',
-  '2027-02-09',
-  '2027-02-10',
-  '2027-03-01',
-  '2027-05-05',
-  '2027-05-13',
-  '2027-08-16',
-  '2027-09-14',
-  '2027-09-15',
-  '2027-09-16',
-  '2027-10-04',
-  '2027-10-11',
-  '2027-12-27',
-  '2028-01-03',
-  '2028-01-26',
-  '2028-01-27',
-  '2028-01-28',
-  '2028-03-01',
-  '2028-05-05',
-  '2028-05-02',
-  '2028-06-06',
-  '2028-08-15',
-  '2028-10-02',
-  '2028-10-03',
-  '2028-10-04',
-  '2028-10-05',
-  '2028-10-09',
-  '2028-12-25',
-])
-
 function parseDate(value: string): Date {
   const [year, month, day] = value.split('-').map(Number)
   return new Date(year, month - 1, day)
+}
+
+function dateToYmdNumber(date: Date): number {
+  return Number(format(date, 'yyyyMMdd'))
+}
+
+function ymdNumberToDate(value: number): Date {
+  const text = String(value)
+  return parseDate(`${text.slice(0, 4)}-${text.slice(4, 6)}-${text.slice(6, 8)}`)
 }
 
 function currentKstDate(): Date {
@@ -84,20 +47,10 @@ function currentKstDate(): Date {
   return new Date(year, month - 1, day)
 }
 
-function isKoreanBusinessDay(date: Date): boolean {
-  const day = date.getDay()
-  if (day === 0 || day === 6) return false
-  return !KOREA_HOLIDAYS.has(format(date, 'yyyy-MM-dd'))
-}
-
 function addKoreanBusinessDays(date: Date, amount: number): Date {
-  let cursor = date
-  let added = 0
-  while (added < amount) {
-    cursor = addDays(cursor, 1)
-    if (isKoreanBusinessDay(cursor)) added += 1
-  }
-  return cursor
+  if (amount <= 0) return date
+  const ymd = getNextKoreanBusinessDayYmd(dateToYmdNumber(date), amount - 1)
+  return ymdNumberToDate(ymd)
 }
 
 /**
