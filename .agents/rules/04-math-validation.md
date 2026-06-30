@@ -1,7 +1,7 @@
 ---
+trigger: glob
 description: 'MDD 수학 검증: 공식 정의 및 데이터 무결성 검증 기준'
 globs: 'src/**/calc*.ts, src/**/mdd*.ts, src/**/recovery*.ts, src/**/raw*.ts, tests/**/*, src/lib/math/**/*'
-alwaysApply: false
 ---
 
 # 계산 정의 (변경 금지)

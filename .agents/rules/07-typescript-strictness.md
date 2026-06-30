@@ -1,7 +1,7 @@
 ---
+trigger: glob
 description: '엄격한 TypeScript 규칙 적용'
 globs: 'src/**/*.ts, src/**/*.tsx, tests/**/*.ts, tests/**/*.tsx'
-alwaysApply: true
 ---
 
 # TypeScript 엄격성 규칙 (Strictness)

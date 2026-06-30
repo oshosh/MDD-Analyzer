@@ -1,7 +1,7 @@
 ---
+trigger: glob
 description: '승격 구조 아키텍처 적용 및 폴더 미러링'
 globs: 'src/**/*, package.json, next.config.*, tsconfig.json'
-alwaysApply: false
 ---
 
 # 승격 구조 아키텍처 (Promotion Structure)

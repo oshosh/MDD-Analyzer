@@ -1,5 +1,5 @@
 ---
-description: '프로젝트 범위 정의: @GEMINI.md 의 목적을 계승하며 요구사항(불변) / 금지사항 / 산출물을 정의함'
+description: '프로젝트 범위 정의: @AGENTS.md 의 목적을 계승하며 요구사항(불변) / 금지사항 / 산출물을 정의함'
 globs: '*'
 alwaysApply: true
 ---

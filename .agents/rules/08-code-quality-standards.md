@@ -1,7 +1,7 @@
 ---
+trigger: glob
 description: '좋은 코드를 위한 4가지 기준: 가독성, 예측 가능성, 응집도, 결합도'
 globs: 'src/**/*, tests/**/*'
-alwaysApply: true
 ---
 
 # 좋은 코드를 위한 4가지 기준

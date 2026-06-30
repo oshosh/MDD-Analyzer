@@ -13,7 +13,7 @@
 
 ## 📁 주요 파일 및 설정
 
-@.gemini/rules/01-project-scope.md
+@.agents/rules/01-project-scope.md
 
 ### 핵심 설정
 
@@ -22,17 +22,17 @@
 - **`tsconfig.json`**: 엄격한 타입을 위한 TypeScript 5.7.3 설정
 - **`postcss.config.mjs`**: Tailwind CSS 4.2.1 처리를 위한 PostCSS 설정
 
-@.gemini/rules/07-typescript-strictness.md
-@.gemini/rules/00-tech-stack.md
-@.gemini/rules/06-quality-standards.md
+@.agents/rules/07-typescript-strictness.md
+@.agents/rules/00-tech-stack.md
+@.agents/rules/06-quality-standards.md
 
 ## 🚀 개발 및 구현 규칙 (Core Mandates)
 
-@.gemini/rules/02-frontend-ui.md
-@.gemini/rules/03-data-api.md
-@.gemini/rules/04-math-validation.md
-@.gemini/rules/05-folder-architecture.md
-@.gemini/rules/08-code-quality-standards.md
+@.agents/rules/02-frontend-ui.md
+@.agents/rules/03-data-api.md
+@.agents/rules/04-math-validation.md
+@.agents/rules/05-folder-architecture.md
+@.agents/rules/08-code-quality-standards.md
 
 ## 📊 핵심 기능
 

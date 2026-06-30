@@ -1,7 +1,7 @@
 ---
-description: '프론트 UI 규칙: @GEMINI.md 에 명시된 Material 3 기반 이미지 1:1 구현 및 스키마 고정'
+trigger: glob
+description: '프론트 UI 규칙: @AGENTS.md 에 명시된 Material 3 기반 이미지 1:1 구현 및 스키마 고정'
 globs: 'src/app/**/*, src/components/**/*, src/styles/**/*, docs/**'
-alwaysApply: false
 ---
 
 # UI 구현 규칙 (이미지 1:1)

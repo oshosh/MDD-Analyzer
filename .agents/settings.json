@@ -7,6 +7,6 @@
   },
   // Customize the context file name
   "context": {
-    "fileName": ["GEMINI.md"]
+    "fileName": ["AGENTS.md"]
   }
 }

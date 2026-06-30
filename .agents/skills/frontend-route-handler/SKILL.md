@@ -1,8 +1,7 @@
 ---
-
-## name: frontend-route-handler
-
+name: frontend-route-handler
 description: 'Next.js App Router (app/api) 기반의 API Route 작성 규칙'
+---
 
 # Route Handler 개발 스킬
 
