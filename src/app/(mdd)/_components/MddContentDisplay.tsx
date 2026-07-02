@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import RawTable from '@/app/(mdd)/_components/RawTable'
 import RecoveryTable from '@/app/(mdd)/_components/RecoveryTable'
 import SummaryTable from '@/app/(mdd)/_components/SummaryTable'
-import ValidationPanel from '@/app/(mdd)/_components/ValidationPanel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import { RawApiResponse } from '@/lib/types'
@@ -53,7 +52,6 @@ export default function MddContentDisplay({ data }: MddContentDisplayProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6">
-          <ValidationPanel validation={data.validation} />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <RecoveryTable
               title={'USD Recovery Rates'}
