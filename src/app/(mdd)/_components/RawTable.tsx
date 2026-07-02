@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { formatNumber, formatPercent } from '@/lib/format'
 import type { RawApiResponse, RawRow } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { Database, Table } from 'lucide-react'
+import { Database, Table, Download } from 'lucide-react'
 
 interface RawTableProps {
   rows: RawRow[]
@@ -192,6 +192,63 @@ export default function RawTable({ rows, meta }: RawTableProps) {
     []
   )
 
+  const handleExportExcel = () => {
+    const BOM = '\uFEFF'
+    const headers = [
+      '일자',
+      '시가',
+      '고가',
+      '저가',
+      '종가',
+      '거래량',
+      '등락률',
+      '고점',
+      '낙폭',
+      '환율',
+      '원화 종가',
+      '원화 고점',
+      '원화 낙폭'
+    ]
+
+    const csvRows = rows.map((row) =>
+      [
+        row.date,
+        row.open,
+        row.high,
+        row.low,
+        row.close,
+        row.volume,
+        row.change_percent,
+        row.peak,
+        row.drawdown,
+        row.fx_usdkrw,
+        row.close_krw,
+        row.peak_krw,
+        row.drawdown_krw
+      ]
+        .map((val) =>
+          typeof val === 'number'
+            ? val.toString()
+            : `"${(val || '').toString().replace(/"/g, '""')}"`
+        )
+        .join(',')
+    )
+
+    const csvContent = BOM + [headers.join(','), ...csvRows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute(
+      'download',
+      `raw_mdd_data_${meta.symbol}_${meta.interval}.csv`
+    )
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <Card className="bg-card/40 min-w-0 overflow-hidden border-none shadow-lg backdrop-blur-md">
       <CardHeader className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -201,17 +258,24 @@ export default function RawTable({ rows, meta }: RawTableProps) {
             RAW 시계열 데이터
           </CardTitle>
         </div>
-        <Badge
-          variant="secondary"
-          className="w-fit gap-1.5 text-[10px] font-bold"
-        >
-          <Database className="h-3 w-3" />
-          {meta.data_source}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportExcel}
+            className="bg-primary hover:bg-primary/80 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-white shadow-md transition-colors cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5" />
+            엑셀 다운로드
+          </button>
+          <Badge
+            variant="secondary"
+            className="w-fit gap-1.5 text-[10px] font-bold"
+          >
+            <Database className="h-3 w-3" />
+            {meta.data_source}
+          </Badge>
+        </div>
       </CardHeader>
       <CardContent className="max-w-full space-y-4 overflow-hidden">
-
-
         <DataTable
           data={rows}
           columns={columns}
