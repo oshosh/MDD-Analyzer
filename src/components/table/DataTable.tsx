@@ -46,6 +46,8 @@ export default function DataTable<TData extends object>({
     rowVirtualizer,
   } = useDataTable({ data, columns, rowHeight, virtualized })
 
+  const firstColumnId = table.getVisibleLeafColumns()[0]?.id
+
   const renderRow = (row: Row<TData>, isVirtual: boolean = false, virtualItem?: VirtualItem) => {
     const rowClass = getRowClassName?.(row.original) ?? '';
 
@@ -54,19 +56,23 @@ export default function DataTable<TData extends object>({
         key={row.id}
         data-index={isVirtual ? virtualItem?.index : undefined}
         ref={isVirtual && virtualItem ? (node) => rowVirtualizer.measureElement(node) : undefined}
-        className={cn('group hover:bg-muted/50 transition-colors', rowClass)}
+        className={cn('group hover:bg-muted transition-colors', rowClass)}
         style={{ height: rowHeight }}
       >
         {row.getVisibleCells().map((cell) => {
-          const isSticky = stickyFirstColumn && cell.column.id === table.getVisibleLeafColumns()[0]?.id;
+          const isSticky = stickyFirstColumn && cell.column.id === firstColumnId;
           const cellMeta = cell.column.columnDef.meta as { className?: string } | undefined;
           return (
             <TableCell
               key={cell.id}
               className={cn(
                 'h-full px-2 py-1.5',
-                cellMeta?.className,
-                isSticky && 'sticky left-0 bg-background/95 backdrop-blur-sm'
+                isSticky && [
+                  'sticky left-0 z-20',
+                  'bg-card group-hover:bg-muted',
+                  'shadow-[1px_0_0_0_hsl(var(--border))]',
+                ],
+                cellMeta?.className
               )}
             >
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -84,7 +90,8 @@ export default function DataTable<TData extends object>({
       style={{ maxHeight }}
     >
       <Table // shadcn/ui Table
-        className="min-w-full border-collapse text-[13px] leading-5"
+        containerClassName="overflow-visible"
+        className="min-w-full border-separate border-spacing-0 text-[13px] leading-5"
         style={{ width: totalWidth > 0 ? totalWidth : '100%' }}
       >
         <colgroup>
@@ -97,19 +104,26 @@ export default function DataTable<TData extends object>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                const isSticky =
+                const isStickyFirstHeader =
                   stickyFirstColumn &&
-                  header.id === table.getVisibleLeafColumns()[0]?.id
+                  header.id === firstColumnId
                 return (
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
                     style={{ width: header.getSize() }}
                     className={cn(
-                      'group relative z-10 px-2 py-2 text-left font-bold uppercase text-muted-foreground',
+                      [
+                        'sticky top-0 z-30',
+                        'bg-card',
+                        'px-2 py-2 text-left font-bold uppercase text-muted-foreground',
+                        'shadow-[0_1px_0_0_hsl(var(--border))]',
+                      ],
                       header.column.getCanSort() && 'cursor-pointer select-none',
-                      isSticky &&
-                        'sticky left-0 bg-background/95 backdrop-blur-sm'
+                      isStickyFirstHeader && [
+                        'left-0 z-40',
+                        'shadow-[1px_1px_0_0_hsl(var(--border))]',
+                      ]
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >

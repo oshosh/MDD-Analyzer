@@ -5,10 +5,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '@/components/table/DataTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { formatNumber } from '@/lib/format'
 import type { RawApiResponse } from '@/lib/types'
-import { CheckCircle2, XCircle, ShieldCheck, Calculator } from 'lucide-react'
+import { CheckCircle2, XCircle, ShieldCheck } from 'lucide-react'
 
 interface ValidationPanelProps {
   validation: RawApiResponse['validation']
@@ -99,49 +98,7 @@ export default function ValidationPanel({ validation }: ValidationPanelProps) {
         </div>
       </CardHeader>
       <CardContent className="max-w-full space-y-6 overflow-hidden">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Alert className="bg-primary/5 border-primary/10 rounded-2xl">
-            <Calculator className="h-4 w-4" />
-            <AlertTitle className="text-xs font-bold tracking-wider uppercase">
-              적용 계산 공식
-            </AlertTitle>
-            <AlertDescription className="mt-2 space-y-1 text-[11px] font-medium">
-              <p>
-                <span className="text-primary">Peak:</span>{' '}
-                {validation.formula.peak}
-              </p>
-              <p>
-                <span className="text-primary">Drawdown:</span>{' '}
-                {validation.formula.drawdown}
-              </p>
-              <p>
-                <span className="text-primary">MDD:</span>{' '}
-                {validation.formula.mdd}
-              </p>
-            </AlertDescription>
-          </Alert>
 
-          <Card>
-            <CardHeader className="p-2 pb-0">
-              <CardTitle className="text-muted-foreground px-1 text-[10px] font-bold uppercase">
-                검증 로그
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-2">
-              <div className="space-y-2">
-                {validation.note.map((note, i) => (
-                  <div
-                    key={i}
-                    className="text-muted-foreground flex gap-2 px-1 text-[11px] leading-tight"
-                  >
-                    <div className="bg-primary/40 mt-1.5 h-1 w-1 shrink-0 rounded-full" />
-                    {note}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         <div className="border-border/40 min-w-0 overflow-hidden rounded-xl border">
           <DataTable

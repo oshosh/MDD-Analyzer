@@ -5,11 +5,10 @@ import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '@/components/table/DataTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { formatNumber, formatPercent } from '@/lib/format'
 import type { RawApiResponse, RawRow } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { Info, Database, Table } from 'lucide-react'
+import { Database, Table } from 'lucide-react'
 
 interface RawTableProps {
   rows: RawRow[]
@@ -211,17 +210,7 @@ export default function RawTable({ rows, meta }: RawTableProps) {
         </Badge>
       </CardHeader>
       <CardContent className="max-w-full space-y-4 overflow-hidden">
-        <Alert
-          variant="default"
-          className="bg-muted/30 rounded-2xl border-none"
-        >
-          <Info className="h-4 w-4" />
-          <AlertTitle className="text-xs font-bold">RAW 컬럼 가이드</AlertTitle>
-          <AlertDescription className="text-[11px] leading-relaxed">
-            원천 수집: date/open/high/low/close/volume/fx_usdkrw | 계산 생성:
-            change_percent/peak/drawdown/close_krw/peak_krw/drawdown_krw
-          </AlertDescription>
-        </Alert>
+
 
         <DataTable
           data={rows}
