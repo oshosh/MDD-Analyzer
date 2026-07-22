@@ -147,6 +147,11 @@ export default function ControlPanel({ value }: ControlPanelProps) {
   ): Promise<SymbolOption[]> {
     const keyword = inputValue.trim()
     if (!keyword) return []
+
+    // 한글 입력 시 최소 2글자 이상일 때만 검색 (불완전한 조합 방지)
+    const isKorean = /[\uAC00-\uD7A3\u3131-\u318E]/.test(keyword)
+    if (isKorean && keyword.length < 2) return []
+
     const cacheKey = keyword.toUpperCase()
 
     if (searchCache.has(cacheKey)) {

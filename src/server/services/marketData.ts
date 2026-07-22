@@ -40,6 +40,40 @@ interface YahooSearchResponse {
   }>
 }
 
+// Wikipedia opensearch returns a tuple: [query, titles[], descriptions[], urls[]]
+type WikiOpenSearchResponse = [string, string[], string[], string[]]
+
+interface WikiLangLinksResponse {
+  query?: {
+    pages?: Record<
+      string,
+      {
+        pageid?: number
+        title?: string
+        langlinks?: Array<{ lang: string; '*': string }>
+      }
+    >
+  }
+}
+
+interface WikiParseResponse {
+  parse?: {
+    title?: string
+    pageid?: number
+    wikitext?: { '*': string }
+  }
+}
+
+interface WikiSearchResponse {
+  query?: {
+    search?: Array<{
+      ns?: number
+      title?: string
+      pageid?: number
+    }>
+  }
+}
+
 interface SourcedRows<T> {
   rows: T[]
   source: Exclude<DataSourceType, 'MIXED'>
@@ -399,6 +433,206 @@ async function searchYahoo(query: string): Promise<Instrument[]> {
   return rows
 }
 
+// ---------------------------------------------------------------------------
+// Korean → English translation via Wikipedia API
+// ---------------------------------------------------------------------------
+
+const KOREAN_REGEX = /[\uAC00-\uD7A3\u3131-\u318E]/
+
+function isKoreanInput(query: string): boolean {
+  return KOREAN_REGEX.test(query)
+}
+
+/**
+ * Wikipedia 한국어판 API를 활용하여 한글 회사명을 영어 공식명으로 변환합니다.
+ *
+ * 1단계: opensearch로 한글 → 위키 문서 제목 후보 목록
+ * 2단계: langlinks로 위키 제목 → 영어 공식명 (파이프 구분으로 일괄 조회)
+ *
+ * @returns 영어 공식명 배열 (없으면 빈 배열)
+ */
+async function translateKoreanToEnglish(query: string): Promise<string[]> {
+  const cacheKey = `wiki:ko2en:${query}`
+  const cached = readCache<string[]>(cacheKey)
+  if (cached) {
+    return cached
+  }
+
+  return withInFlight(cacheKey, async () => {
+    // Step 1: opensearch — 한글 검색어 → 위키 문서 제목 후보
+    const openSearchUrl = new URL('https://ko.wikipedia.org/w/api.php')
+    openSearchUrl.searchParams.set('action', 'opensearch')
+    openSearchUrl.searchParams.set('search', query)
+    openSearchUrl.searchParams.set('limit', '5')
+    openSearchUrl.searchParams.set('format', 'json')
+
+    let titles: string[]
+    try {
+      const response = await serverApi.get<WikiOpenSearchResponse>(
+        openSearchUrl.toString(),
+        {
+          headers: {
+            'user-agent':
+              'MDD-Analyzer/1.0 (https://github.com/mdd-analyzer; contact@mdd.dev)',
+            accept: 'application/json',
+          },
+        }
+      )
+      titles = response.data[1] ?? []
+    } catch {
+      writeCache(cacheKey, [], 60_000)
+      return []
+    }
+
+    if (titles.length === 0) {
+      // opensearch 실패 시 fulltext search fallback (제목+본문 검색)
+      // "삼성전기" 같은 붙여쓰기 표기가 opensearch에서 빠질 수 있음
+      try {
+        const searchUrl = new URL('https://ko.wikipedia.org/w/api.php')
+        searchUrl.searchParams.set('action', 'query')
+        searchUrl.searchParams.set('list', 'search')
+        searchUrl.searchParams.set('srsearch', query)
+        searchUrl.searchParams.set('srlimit', '5')
+        searchUrl.searchParams.set('srnamespace', '0')
+        searchUrl.searchParams.set('format', 'json')
+
+        const searchResponse = await serverApi.get<WikiSearchResponse>(
+          searchUrl.toString(),
+          {
+            headers: {
+              'user-agent':
+                'MDD-Analyzer/1.0 (https://github.com/mdd-analyzer; contact@mdd.dev)',
+              accept: 'application/json',
+            },
+          }
+        )
+        titles =
+          searchResponse.data.query?.search
+            ?.map((item) => item.title)
+            .filter((t): t is string => typeof t === 'string') ?? []
+      } catch {
+        // fulltext search도 실패하면 빈 배열
+      }
+    }
+
+    if (titles.length === 0) {
+      writeCache(cacheKey, [], 60_000)
+      return []
+    }
+
+    // Step 2: langlinks — 위키 제목들 → 영어 공식명 (파이프로 일괄 조회)
+    const titlesToQuery = titles.slice(0, 3).join('|')
+    const langLinksUrl = new URL('https://ko.wikipedia.org/w/api.php')
+    langLinksUrl.searchParams.set('action', 'query')
+    langLinksUrl.searchParams.set('titles', titlesToQuery)
+    langLinksUrl.searchParams.set('prop', 'langlinks')
+    langLinksUrl.searchParams.set('lllang', 'en')
+    langLinksUrl.searchParams.set('redirects', '1')
+    langLinksUrl.searchParams.set('format', 'json')
+
+    let englishNames: string[]
+    try {
+      const response = await serverApi.get<WikiLangLinksResponse>(
+        langLinksUrl.toString(),
+        {
+          headers: {
+            'user-agent':
+              'MDD-Analyzer/1.0 (https://github.com/mdd-analyzer; contact@mdd.dev)',
+            accept: 'application/json',
+          },
+        }
+      )
+
+      const pages = response.data.query?.pages ?? {}
+      englishNames = Object.values(pages)
+        .map((page) => page.langlinks?.[0]?.['*'])
+        .filter((name): name is string => typeof name === 'string' && name.length > 0)
+    } catch {
+      writeCache(cacheKey, [], 60_000)
+      return []
+    }
+
+    // Step 3: langlinks가 없으면 wikitext에서 영어명 추출 (fallback)
+    // 한국어 위키의 기업 문서에는 `|원어 = KIOXIA Corporation` 또는
+    // `{{llang|en|KIOXIA Corporation}}` 형태로 영어명이 포함되어 있음
+    if (englishNames.length === 0 && titles.length > 0) {
+      try {
+        const parseUrl = new URL('https://ko.wikipedia.org/w/api.php')
+        parseUrl.searchParams.set('action', 'parse')
+        parseUrl.searchParams.set('page', titles[0])
+        parseUrl.searchParams.set('prop', 'wikitext')
+        parseUrl.searchParams.set('section', '0')
+        parseUrl.searchParams.set('format', 'json')
+
+        const parseResponse = await serverApi.get<WikiParseResponse>(
+          parseUrl.toString(),
+          {
+            headers: {
+              'user-agent':
+                'MDD-Analyzer/1.0 (https://github.com/mdd-analyzer; contact@mdd.dev)',
+              accept: 'application/json',
+            },
+          }
+        )
+
+        const wikitext = parseResponse.data.parse?.wikitext?.['*'] ?? ''
+        const extracted = extractEnglishNameFromWikitext(wikitext)
+        if (extracted) {
+          englishNames = [extracted]
+        }
+      } catch {
+        // wikitext 추출 실패 시 무시하고 빈 배열 유지
+      }
+    }
+
+    // 1시간 캐싱 (회사명은 잘 변하지 않음)
+    writeCache(cacheKey, englishNames, 60 * 60_000)
+    return englishNames
+  })
+}
+
+/**
+ * 한국어 위키 문서의 wikitext에서 영어 회사명을 추출합니다.
+ *
+ * 지원 패턴:
+ * - `|원어 = KIOXIA Corporation`  ({{회사 정보}} 템플릿)
+ * - `{{llang|en|KIOXIA Corporation}}`  (본문 내 다국어 표기)
+ * - `{{lang|en|KIOXIA Corporation}}`  (본문 내 언어 표기)
+ */
+function extractEnglishNameFromWikitext(wikitext: string): string | null {
+  // 패턴 1: |원어 = English Name
+  const woneoMatch = wikitext.match(/\|원어\s*=\s*(.+?)(?:\n|\|)/)
+  if (woneoMatch?.[1]) {
+    const cleaned = woneoMatch[1].trim()
+    // 위키 마크업 제거 ({{lang|...|...}} 같은 것이 감싸고 있을 수 있음)
+    const innerMatch = cleaned.match(/\{\{lang\|[a-z]+\|(.+?)\}\}/)
+    const name = innerMatch?.[1]?.trim() ?? cleaned
+    if (name && /[A-Za-z]/.test(name)) {
+      return name
+    }
+  }
+
+  // 패턴 2: {{llang|en|English Name}} 또는 {{llang|en|English Name|...}}
+  const llangMatch = wikitext.match(/\{\{llang\|en\|([^|}]+)/)
+  if (llangMatch?.[1]) {
+    const name = llangMatch[1].trim()
+    if (name && /[A-Za-z]/.test(name)) {
+      return name
+    }
+  }
+
+  // 패턴 3: {{lang|en|English Name}}
+  const langMatch = wikitext.match(/\{\{lang\|en\|([^|}]+)/)
+  if (langMatch?.[1]) {
+    const name = langMatch[1].trim()
+    if (name && /[A-Za-z]/.test(name)) {
+      return name
+    }
+  }
+
+  return null
+}
+
 async function fetchYahooListingDate(
   asset: AssetType,
   symbol: string
@@ -454,6 +688,7 @@ export async function searchInstruments(query: string): Promise<Instrument[]> {
     return DEFAULT_INSTRUMENTS
   }
 
+  // 프록시 우선 (한글/영문 무관)
   const proxy = await fetchProxyJson<{ rows: Instrument[] }>('/search', {
     q: normalized,
   })
@@ -461,11 +696,45 @@ export async function searchInstruments(query: string): Promise<Instrument[]> {
     return proxy.rows
   }
 
-  const yahoo = await searchYahoo(normalized)
-  if (yahoo.length) {
-    return yahoo
+  // 한글 입력 감지 시 Wikipedia 번역 파이프라인
+  if (isKoreanInput(normalized)) {
+    const englishNames = await translateKoreanToEnglish(normalized)
+
+    if (englishNames.length > 0) {
+      // 영어명 각각에 대해 Yahoo 검색을 병렬 실행
+      const searchPromises = englishNames.map((name) => searchYahoo(name))
+      const results = await Promise.all(searchPromises)
+
+      // 중복 제거 후 병합 (symbol 기준)
+      const dedupe = new Map<string, Instrument>()
+      for (const instruments of results) {
+        for (const instrument of instruments) {
+          if (!dedupe.has(instrument.symbol)) {
+            dedupe.set(instrument.symbol, instrument)
+          }
+        }
+      }
+
+      const merged = [...dedupe.values()].slice(0, 20)
+      if (merged.length > 0) {
+        return merged
+      }
+    }
+
+    // Wikipedia 번역 실패 시 원본 한글로 Yahoo 검색 시도 (fallback)
+    const yahooFallback = await searchYahoo(normalized)
+    if (yahooFallback.length) {
+      return yahooFallback
+    }
+  } else {
+    // 영문/숫자 입력: 기존 Yahoo 검색
+    const yahoo = await searchYahoo(normalized)
+    if (yahoo.length) {
+      return yahoo
+    }
   }
 
+  // 최종 fallback: DEFAULT_INSTRUMENTS 필터링
   const q = normalized.toLowerCase()
   return DEFAULT_INSTRUMENTS.filter(
     (row) =>
