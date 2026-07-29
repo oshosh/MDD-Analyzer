@@ -6,8 +6,9 @@ import RawTable from '@/app/(mdd)/_components/RawTable'
 import RecoveryTable from '@/app/(mdd)/_components/RecoveryTable'
 import SummaryTable from '@/app/(mdd)/_components/SummaryTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
-import { RawApiResponse } from '@/lib/types'
+import type { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
+import type { RawApiResponse } from '@/lib/types'
+import { InvestorTrendTab } from '@/app/(mdd)/_components/stock/InvestorTrendTab'
 
 const BuySignalPanel = dynamic(
   () => import('@/app/(mdd)/_components/BuySignalPanel'),
@@ -27,9 +28,27 @@ interface MddContentDisplayProps {
   query: MddQueryInput
 }
 
-export default function MddContentDisplay({ data }: MddContentDisplayProps) {
+function extractKoreanStockCode(symbol: string): string | null {
+  if (!symbol) return null
+  const cleaned = symbol.trim().toUpperCase()
+  if (/^\d{6}$/.test(cleaned)) return cleaned
+  if (cleaned.endsWith('.KS') || cleaned.endsWith('.KQ')) {
+    const code = cleaned.split('.')[0]
+    if (/^\d{6}$/.test(code)) return code
+  }
+  return null
+}
+
+export default function MddContentDisplay({ data, query }: MddContentDisplayProps) {
+  const krStockCode = extractKoreanStockCode(query.symbol || data.meta.symbol || '')
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-col gap-8 duration-700">
+      {/* 한국 종목일 때 실시간 시세 및 투자자 수급 동향 카드 표시 */}
+      {krStockCode && (
+        <InvestorTrendTab stockCode={krStockCode} />
+      )}
+
       <SummaryTable summary={data.summary} meta={data.meta} />
 
       <Card>

@@ -36,3 +36,11 @@ export const RawQuerySchema = z.object({
   interval: z.enum(INTERVALS).default('1d'),
   fx: z.literal('USDKRW').default('USDKRW'),
 })
+
+export const KrStockQuerySchema = z.object({
+  code: z
+    .string()
+    .regex(/^\d{6}$/, 'Stock code must be a 6-digit number')
+    .default('005930'),
+})
+
