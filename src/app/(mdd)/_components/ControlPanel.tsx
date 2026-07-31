@@ -214,7 +214,7 @@ export default function ControlPanel({ value }: ControlPanelProps) {
             styles={selectStyles}
             placeholder="티커 입력 (예: SPY, AAPL, BTC...)"
             defaultOptions={DEFAULT_OPTIONS}
-            menuPortalTarget={portalTarget}
+            menuPortalTarget={portalTarget || undefined}
             menuPlacement="auto"
             cacheOptions
             isClearable={false}

@@ -32,9 +32,10 @@ function toCacheKey(params: {
  *
  * REST API (/api/raw) 대신 Server Action을 사용함으로써
  * 브라우저 Network 탭에 raw JSON 데이터가 직접 노출되지 않고 RSC Payload로 안전하게 전달됩니다.
- */
+ */1
 export async function getMddRawAction(params: MddQueryInput): Promise<RawApiResponse> {
   const parsed = RawQuerySchema.safeParse({
+    asset: 'US_STOCK',
     symbol: params.symbol,
     from: params.from,
     to: params.to,
@@ -43,12 +44,13 @@ export async function getMddRawAction(params: MddQueryInput): Promise<RawApiResp
   })
 
   if (!parsed.success) {
-    throw new Error('Invalid MDD query parameters')
+    console.error('getMddRawAction parse error:', parsed.error.format())
+    throw new Error(`Invalid MDD query parameters: ${parsed.error.message}`)
   }
 
   const cacheKey = toCacheKey(parsed.data)
   const cached = await readJsonCache<RawApiResponse>(cacheKey)
-  if (cached) {
+  if (cached) {1
     return cached
   }
 

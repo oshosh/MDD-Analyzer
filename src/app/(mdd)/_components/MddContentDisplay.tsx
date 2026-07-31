@@ -1,7 +1,5 @@
 // src/app/(mdd)/_components/MddContentDisplay.tsx
 'use client'
-
-import dynamic from 'next/dynamic'
 import RawTable from '@/app/(mdd)/_components/RawTable'
 import RecoveryTable from '@/app/(mdd)/_components/RecoveryTable'
 import SummaryTable from '@/app/(mdd)/_components/SummaryTable'
@@ -10,18 +8,9 @@ import type { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import type { RawApiResponse } from '@/lib/types'
 import { InvestorTrendTab } from '@/app/(mdd)/_components/stock/InvestorTrendTab'
 
-const BuySignalPanel = dynamic(
-  () => import('@/app/(mdd)/_components/BuySignalPanel'),
-  { ssr: false }
-)
-const AnalyticsPanel = dynamic(
-  () => import('@/app/(mdd)/_components/AnalyticsPanel'),
-  { ssr: false }
-)
-const ChartsPanel = dynamic(
-  () => import('@/app/(mdd)/_components/ChartsPanel'),
-  { ssr: false }
-)
+import BuySignalPanel from '@/app/(mdd)/_components/BuySignalPanel'
+import AnalyticsPanel from '@/app/(mdd)/_components/AnalyticsPanel'
+import ChartsPanel from '@/app/(mdd)/_components/ChartsPanel'
 
 interface MddContentDisplayProps {
   data: RawApiResponse
