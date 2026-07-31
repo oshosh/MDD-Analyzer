@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import type { StylesConfig } from 'react-select'
-import { browserApiClient } from '@/lib/http/axios'
+import { searchSymbolsAction } from '@/app/(mdd)/_lib/actions'
 import {
   Select,
   SelectContent,
@@ -162,14 +162,9 @@ export default function ControlPanel({ value }: ControlPanelProps) {
 
     setIsSearching(true)
     try {
-      const response = await browserApiClient.get<SearchResponse>(
-        '/api/search',
-        {
-          params: { q: keyword },
-        }
-      )
+      const rows = await searchSymbolsAction(keyword)
       const dedupe = new Map<string, SymbolOption>()
-      for (const row of response.data.rows) {
+      for (const row of rows) {
         const option = toOption(row)
         dedupe.set(option.value, option)
       }

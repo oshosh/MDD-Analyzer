@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { browserApiClient } from '@/lib/http/axios'
+import { getKrStockPriceAction, type KrPriceResponse } from '@/app/(mdd)/_lib/actions'
 import { Text } from '@/components/ui/text'
 
 interface RealtimePriceHeaderProps {
@@ -38,12 +38,9 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
   const [flash, setFlash] = useState<'UP' | 'DOWN' | null>(null)
   const prevPriceRef = useRef<string>(initialClosePrice)
 
-  const { data } = useQuery<PriceApiResponse>({
+  const { data } = useQuery<KrPriceResponse>({
     queryKey: ['kr-stock-price', stockCode],
-    queryFn: async () => {
-      const res = await browserApiClient.get<PriceApiResponse>(`/api/kr-stock/price?code=${stockCode}`)
-      return res.data
-    },
+    queryFn: () => getKrStockPriceAction(stockCode),
     staleTime: 5 * 60_000,
     initialData: {
       stockCode,

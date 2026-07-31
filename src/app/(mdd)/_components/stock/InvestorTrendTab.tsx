@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { KrStockIntegrationData } from '@/lib/types'
-import { browserApiClient } from '@/lib/http/axios'
+import { getKrStockIntegrationAction } from '@/app/(mdd)/_lib/actions'
 import { RealtimePriceHeader } from './RealtimePriceHeader'
 import { InvestorBarRow, type DisplayMode } from './InvestorBarRow'
 
@@ -33,10 +33,7 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
 
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery<KrStockIntegrationData>({
     queryKey: ['kr-stock-integration', stockCode],
-    queryFn: async () => {
-      const res = await browserApiClient.get<KrStockIntegrationData>(`/api/kr-stock?code=${stockCode}`)
-      return res.data
-    },
+    queryFn: () => getKrStockIntegrationAction(stockCode),
     staleTime: 5 * 60_000, // 5분간 캐시 보관 (자동 반복 틱 제거)
   })
 

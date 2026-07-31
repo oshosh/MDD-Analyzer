@@ -1,5 +1,4 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { getQueryClient } from '@/components/provider/react-query-provider/getQueryClient'
 import MddContents from '@/app/(mdd)/_components/MddContents'
@@ -22,12 +21,7 @@ export default async function MddPage({ searchParams }: MddPageProps) {
   const parsed = MddQueryInputSchema.safeParse(resolved)
   const query = parsed.success ? parsed.data : MddQueryInputSchema.parse({})
 
-  const headerStore = await headers()
-  const host = headerStore.get('host') ?? 'localhost:3000'
-  const protocol = host.startsWith('localhost') ? 'http' : 'https'
-  const baseUrl = `${protocol}://${host}`
-
-  await queryClient.prefetchQuery(mddQueryOptions(query, baseUrl))
+  await queryClient.prefetchQuery(mddQueryOptions(query))
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
