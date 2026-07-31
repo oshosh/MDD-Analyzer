@@ -110,12 +110,16 @@ export const browserApiClient = createAxiosClient({
   middlewares: [
     {
       onRequest: async (config) => {
+        // SSR 환경에서는 서명을 첨부하지 않음 (브라우저 전용)
+        if (typeof window === 'undefined') return config
+
         // 자사 API 호출 시에만 HMAC 서명 첨부
         const url = config.url || ''
-        if (url.startsWith('/api') || url.startsWith('/api/')) {
+        if (url.startsWith('/api')) {
           const { createRequestSignature, SIGNATURE_HEADER, TIMESTAMP_HEADER } =
             await import('@/lib/security')
-          const pathname = new URL(url, window.location.origin).pathname
+          // URL에서 pathname만 추출 (쿼리스트링 제거)
+          const pathname = url.split('?')[0]
           const { signature, timestamp } = await createRequestSignature(pathname)
           config.headers.set(SIGNATURE_HEADER, signature)
           config.headers.set(TIMESTAMP_HEADER, timestamp)
