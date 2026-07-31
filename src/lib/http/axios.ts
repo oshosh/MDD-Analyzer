@@ -106,8 +106,27 @@ export function createAxiosClient(options?: ApiClientOptions): AxiosInstance {
   return applyMiddlewares(buildInstance(options), middlewares)
 }
 
-export const browserApiClient = createAxiosClient()
+export const browserApiClient = createAxiosClient({
+  middlewares: [
+    {
+      onRequest: async (config) => {
+        // 자사 API 호출 시에만 HMAC 서명 첨부
+        const url = config.url || ''
+        if (url.startsWith('/api') || url.startsWith('/api/')) {
+          const { createRequestSignature, SIGNATURE_HEADER, TIMESTAMP_HEADER } =
+            await import('@/lib/security')
+          const pathname = new URL(url, window.location.origin).pathname
+          const { signature, timestamp } = await createRequestSignature(pathname)
+          config.headers.set(SIGNATURE_HEADER, signature)
+          config.headers.set(TIMESTAMP_HEADER, timestamp)
+        }
+        return config
+      },
+    },
+  ],
+})
 
 export function createServerApiClient(baseURL?: string): AxiosInstance {
   return createAxiosClient({ baseURL })
 }
+
