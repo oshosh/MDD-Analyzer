@@ -32,7 +32,7 @@ function toCacheKey(params: {
  *
  * REST API (/api/raw) 대신 Server Action을 사용함으로써
  * 브라우저 Network 탭에 raw JSON 데이터가 직접 노출되지 않고 RSC Payload로 안전하게 전달됩니다.
- */1
+ */
 export async function getMddRawAction(params: MddQueryInput): Promise<RawApiResponse> {
   const parsed = RawQuerySchema.safeParse({
     asset: 'US_STOCK',
@@ -50,7 +50,7 @@ export async function getMddRawAction(params: MddQueryInput): Promise<RawApiResp
 
   const cacheKey = toCacheKey(parsed.data)
   const cached = await readJsonCache<RawApiResponse>(cacheKey)
-  if (cached) {1
+  if (cached) {
     return cached
   }
 
