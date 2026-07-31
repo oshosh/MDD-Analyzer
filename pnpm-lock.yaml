@@ -45,7 +45,7 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       next:
-        specifier: ^15.1.7
+        specifier: ^15.5.22
         version: 15.5.22(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       radix-ui:
         specifier: ^1.4.3
