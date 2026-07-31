@@ -19,10 +19,6 @@ import type { MddQueryInput } from '@/app/(mdd)/_lib/schemas'
 import { Calendar, BarChart3, ArrowRight } from 'lucide-react'
 import { useSymbolDates } from '@/app/(mdd)/_hooks/useSymbolDates' // NEW IMPORT
 
-interface SearchResponse {
-  rows: Instrument[]
-}
-
 interface SymbolOption {
   value: string
   label: string

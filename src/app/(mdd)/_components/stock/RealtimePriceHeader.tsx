@@ -15,17 +15,6 @@ interface RealtimePriceHeaderProps {
   initialFetchedAt?: string
 }
 
-interface PriceApiResponse {
-  stockCode: string
-  stockName: string
-  closePrice: string
-  compareToPreviousPriceText: string
-  fluctuationsRatio: string
-  isRising: boolean
-  isFalling: boolean
-  fetchedAt: string
-}
-
 export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
   stockCode,
   initialClosePrice,
