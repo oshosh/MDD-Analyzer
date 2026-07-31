@@ -60,6 +60,7 @@ desktop.ini
 
 *.png
 *.log
-test.md
-
 .gemini/refactors
+
+# Project Local Cache
+.cache/
