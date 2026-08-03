@@ -139,6 +139,7 @@ export default function NormalDistributionChart({
             symbolSize: 32,
             data: [
               {
+                name: '현재 위치',
                 coord: [currentDrawdown * 100, currentY],
                 itemStyle: { color: '#ef4444' },
                 label: {
