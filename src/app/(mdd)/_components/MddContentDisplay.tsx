@@ -48,7 +48,7 @@ export default function MddContentDisplay({ data, query }: MddContentDisplayProp
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <BuySignalPanel signals={data.buy_signal} />
+          <BuySignalPanel signals={data.buy_signal} summary={data.summary} />
         </CardContent>
       </Card>
 

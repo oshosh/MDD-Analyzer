@@ -415,11 +415,165 @@ function SignalCard({
   )
 }
 
-export default function BuySignalPanel({ signals }: BuySignalPanelProps) {
+interface BuySignalPanelProps {
+  signals: RawApiResponse['buy_signal']
+  summary?: RawApiResponse['summary']
+}
+
+function ActionableVerdictBanner({
+  signal,
+  sortino,
+}: {
+  signal: BuySignal | null
+  sortino?: number
+}) {
+  if (!signal) return null
+
+  const getVerdictDetails = (level: number) => {
+    switch (level) {
+      case 5:
+        return {
+          rating: 'A+ (역사적 대기회)',
+          title: '🔥 무조건 사야 할 기회! 역사적 바닥 매수 구간',
+          badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+          gradientBg:
+            'from-purple-950/80 via-slate-900 to-slate-950 border-purple-500/50',
+          actionText:
+            '역사적 최저점 수준입니다. 공포를 딛고 적극적인 매수에 나설 최고의 타이밍입니다.',
+        }
+      case 4:
+        return {
+          rating: 'A (적극 매수 추천)',
+          title: '🚀 적극 매수 적기! 손익비 우수 구간',
+          badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+          gradientBg:
+            'from-blue-950/80 via-slate-900 to-slate-950 border-blue-500/50',
+          actionText:
+            '하락 위험 대비 기대 수익이 매우 큽니다. 비중을 확대하기에 유익한 구간입니다.',
+        }
+      case 3:
+        return {
+          rating: 'B+ (분할 매수 적기)',
+          title: '🩵 정기 분할 매수로 모아가기 좋은 구간',
+          badgeBg: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
+          gradientBg:
+            'from-sky-950/70 via-slate-900 to-slate-950 border-sky-500/40',
+          actionText:
+            '유의미한 조정을 마쳤습니다. 차분하게 분할 매수로 모아가기 적합합니다.',
+        }
+      case 2:
+        return {
+          rating: 'C (보통/관망)',
+          title: '🟡 관망 추천 / 보수적 접근',
+          badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+          gradientBg:
+            'from-amber-950/50 via-slate-900 to-slate-950 border-amber-500/30',
+          actionText:
+            '일상적인 변동성 범위입니다. 서둘러 매수하지 말고 느긋하게 다음 기회를 기다리세요.',
+        }
+      default:
+        return {
+          rating: 'D (과열/매수 위험)',
+          title: '🔴 과열 주의! 지금 사면 위험한 고점 구간',
+          badgeBg: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+          gradientBg:
+            'from-rose-950/80 via-slate-900 to-slate-950 border-rose-500/50',
+          actionText:
+            '전고점 인근의 과열 구간입니다. 신규 매수를 피하고 조정 시기를 기다리는 것이 안전합니다.',
+        }
+    }
+  }
+
+  const primarySignal = signal
+  const v = getVerdictDetails(primarySignal.level)
+  const winRate =
+    primarySignal.win_rate_1y !== null
+      ? formatPercent(primarySignal.win_rate_1y)
+      : null
+  const return1y =
+    primarySignal.historical_return_1y !== null
+      ? formatPercent(primarySignal.historical_return_1y)
+      : null
+
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <SignalCard title="USD ASSET" signal={signals.usd} />
-      <SignalCard title="KRW (환노출)" signal={signals.krw} />
+    <div
+      className={cn(
+        'relative mb-6 overflow-hidden rounded-2xl border p-5 shadow-2xl transition-all bg-gradient-to-r',
+        v.gradientBg
+      )}
+    >
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="outline"
+              className={cn('px-2.5 py-0.5 text-xs font-black tracking-wider uppercase', v.badgeBg)}
+            >
+              종합 매수 판정: {v.rating}
+            </Badge>
+            <Badge
+              variant="secondary"
+              className="bg-slate-800/90 font-mono text-xs text-slate-200"
+            >
+              매수 우위 점수: {primarySignal.score} / 100점
+            </Badge>
+          </div>
+          <h2 className="text-xl font-black tracking-tight text-white md:text-2xl">
+            {v.title}
+          </h2>
+          <p className="text-xs font-medium text-slate-300 md:text-sm">
+            {v.actionText}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap gap-2 sm:gap-3">
+          {winRate !== null && (
+            <div className="rounded-xl border border-slate-700/60 bg-slate-900/90 px-3.5 py-2 text-center">
+              <span className="block text-[10px] font-bold uppercase text-slate-400">
+                1년 뒤 상승 승률
+              </span>
+              <span className="text-lg font-black tabular-nums text-emerald-400">
+                {winRate}
+              </span>
+            </div>
+          )}
+          {return1y !== null && (
+            <div className="rounded-xl border border-slate-700/60 bg-slate-900/90 px-3.5 py-2 text-center">
+              <span className="block text-[10px] font-bold uppercase text-slate-400">
+                1년 평균 기대수익
+              </span>
+              <span className="text-lg font-black tabular-nums text-sky-400">
+                +{return1y}
+              </span>
+            </div>
+          )}
+          {sortino !== undefined && (
+            <div className="rounded-xl border border-slate-700/60 bg-slate-900/90 px-3.5 py-2 text-center">
+              <span className="block text-[10px] font-bold uppercase text-slate-400">
+                하방 안전성
+              </span>
+              <span className="text-lg font-black tabular-nums text-amber-400">
+                {sortino.toFixed(2)}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function BuySignalPanel({ signals, summary }: BuySignalPanelProps) {
+  const primarySignal = signals.krw || signals.usd
+  const primarySortino = summary?.krw.sortino_ratio ?? summary?.usd?.sortino_ratio
+
+  return (
+    <div className="space-y-6">
+      <ActionableVerdictBanner signal={primarySignal} sortino={primarySortino} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <SignalCard title="USD ASSET" signal={signals.usd} />
+        <SignalCard title="KRW (환노출)" signal={signals.krw} />
+      </div>
     </div>
   )
 }
