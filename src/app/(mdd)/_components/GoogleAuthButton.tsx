@@ -28,6 +28,28 @@ interface GoogleAuthButtonProps {
   onTokenChange?: (token: string | null) => void
 }
 
+interface GoogleOAuthResponse {
+  access_token?: string
+}
+
+interface GoogleOAuthTokenClient {
+  requestAccessToken: () => void
+}
+
+interface WindowWithGoogle {
+  google?: {
+    accounts?: {
+      oauth2?: {
+        initTokenClient: (config: {
+          client_id: string
+          scope: string
+          callback: (response: GoogleOAuthResponse) => void
+        }) => GoogleOAuthTokenClient
+      }
+    }
+  }
+}
+
 export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
   const [token, setToken] = useState<string | null>(null)
   const [showKeyInput, setShowKeyInput] = useState(false)
@@ -41,7 +63,8 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
 
   // 카카오/구글 표준 GIS Token Client 연동
   useEffect(() => {
-    if (typeof window !== 'undefined' && !(window as any).google?.accounts?.oauth2) {
+    const win = typeof window !== 'undefined' ? (window as unknown as WindowWithGoogle) : null
+    if (win && !win.google?.accounts?.oauth2) {
       const script = document.createElement('script')
       script.src = 'https://accounts.google.com/gsi/client'
       script.async = true
@@ -52,12 +75,13 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
 
   function handleGoogleLogin() {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
+    const win = typeof window !== 'undefined' ? (window as unknown as WindowWithGoogle) : null
 
-    if (typeof window !== 'undefined' && (window as any).google?.accounts?.oauth2) {
-      const tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
+    if (win && win.google?.accounts?.oauth2) {
+      const tokenClient = win.google.accounts.oauth2.initTokenClient({
         client_id: clientId,
         scope: 'email profile openid',
-        callback: (response: any) => {
+        callback: (response: GoogleOAuthResponse) => {
           if (response.access_token) {
             setStoredUserToken(response.access_token)
             setToken(response.access_token)

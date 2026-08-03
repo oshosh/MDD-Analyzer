@@ -271,8 +271,8 @@ export default function NormalDistributionChart({
         <div className="flex items-start gap-2 rounded-xl border border-primary/20 bg-primary/5 p-3 text-[11px] leading-relaxed text-muted-foreground">
           <span className="font-bold text-primary shrink-0">💡 쉽게 보는 법:</span>
           <div>
-            핀(📍) 위치가 <strong className="text-emerald-400">왼쪽 🟢 영역(깊은 하락)</strong>으로 갈수록 역사적으로 많이 떨어진 <strong>'싸게 살 기회'</strong>이며, 
-            <strong className="text-rose-400"> 오른쪽 🔴 영역(전고점 부근)</strong>으로 갈수록 고점에 가까운 <strong>'신규진입 위험 위치'</strong>입니다.
+            핀(📍) 위치가 <strong className="text-emerald-400">왼쪽 🟢 영역(깊은 하락)</strong>으로 갈수록 역사적으로 많이 떨어진 <strong>&quot;싸게 살 기회&quot;</strong>이며, 
+            <strong className="text-rose-400"> 오른쪽 🔴 영역(전고점 부근)</strong>으로 갈수록 고점에 가까운 <strong>&quot;신규진입 위험 위치&quot;</strong>입니다.
           </div>
         </div>
       </CardContent>

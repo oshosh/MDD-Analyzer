@@ -418,7 +418,7 @@ export default function DrawdownCycleTimeline({
                     ⚡ Google OAuth 연동 상태 (Gemini 1.5 Flash)
                   </span>
                   <span className="text-muted-foreground text-[11px] leading-normal">
-                    구글 Gemini LLM이 당시 팩트를 주입(RAG)받아 <strong>'기업 및 산업군 폭락 원인'</strong>을 심층 분석합니다.
+                    구글 Gemini LLM이 당시 팩트를 주입(RAG)받아 <strong>&quot;기업 및 산업군 폭락 원인&quot;</strong>을 심층 분석합니다.
                   </span>
                 </div>
               </div>

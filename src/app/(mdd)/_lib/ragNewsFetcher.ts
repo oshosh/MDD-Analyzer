@@ -42,7 +42,7 @@ export async function fetchRealtimeNewsForPeriod(
   const isKrCode = /^\d{6}$/.test(cleanSymbol)
 
   // 동적 표시명 결정 (6자리 티커 코드일 경우 회사명 폴백 적용)
-  let displayName = symbolName && symbolName.trim() !== '' && !symbolName.includes('.KS') && !symbolName.includes('.KQ') && !/^\d{6}$/.test(symbolName.trim())
+  const displayName = symbolName && symbolName.trim() !== '' && !symbolName.includes('.KS') && !symbolName.includes('.KQ') && !/^\d{6}$/.test(symbolName.trim())
     ? symbolName.trim()
     : KR_CODE_NAME_FALLBACK[cleanSymbol] || cleanSymbol
 
