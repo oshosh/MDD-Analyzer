@@ -86,16 +86,8 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
         }
       }, 500)
     } else {
-      // Client ID 미설정 시 데모 팝업 토큰 수신 처리
-      const demoToken = prompt(
-        'Google Cloud OAuth Client ID가 아직 설정되지 않았습니다.\n테스트를 위한 Google OAuth Access Token을 넣어주시면 원클릭 로그인으로 처리됩니다:'
-      )
-      if (demoToken && demoToken.trim()) {
-        const clean = demoToken.trim()
-        setStoredUserToken(clean)
-        setToken(clean)
-        if (onTokenChange) onTokenChange(clean)
-      }
+      // Client ID 미설정 시 지저분한 browser prompt() 알림창을 완전히 제거
+      alert('구글 OAuth Client ID(.env.local의 NEXT_PUBLIC_GOOGLE_CLIENT_ID)를 설정하시면 팝업 로그인이 작동합니다.')
     }
   }
 
