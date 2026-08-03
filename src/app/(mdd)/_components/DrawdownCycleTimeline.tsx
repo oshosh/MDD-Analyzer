@@ -268,15 +268,43 @@ export default function DrawdownCycleTimeline({
               })}
             </div>
 
-            {/* Google OAuth & Gemini AI 보안 혜택 안내 (무DB 안전 토큰 모드) */}
-            <div className="mt-1 flex flex-col gap-2 rounded-lg bg-background/80 p-3 border text-xs sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-500 animate-pulse shrink-0" />
-                <span>
-                  <strong className="text-foreground">Google OAuth Gemini 연동:</strong> 개발자 공용 키 0%! 구글 로그인을 통해 사용자의 OAuth 권한으로 Gemini LLM을 직접 안전하게 호출합니다.
-                </span>
+            {/* Google OAuth & Gemini AI 서비스 비교 및 방법론 안내 박스 */}
+            <div className="mt-2 flex flex-col gap-3 rounded-xl border border-purple-500/20 bg-purple-500/5 p-4 text-xs dark:bg-purple-950/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1.5 font-bold text-purple-700 dark:text-purple-300 text-sm">
+                  <Sparkles className="h-4 w-4 text-purple-500 animate-pulse shrink-0" />
+                  <span>💡 AI 맥락 분석 & Google OAuth 연동 안내</span>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">
+                  수학 알고리즘으로 감지한 역대 대규모 하락 구간(-40% 이상)의 <strong>고점~저점 시기</strong>를 기준으로 당시 언론 보도 팩트를 수집합니다.
+                </p>
               </div>
-              <GoogleAuthButton onTokenChange={(newToken) => setUserToken(newToken)} />
+
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-1 border-t border-purple-500/10">
+                <div className="flex flex-col gap-1 rounded-lg bg-background/60 p-2.5 border">
+                  <span className="font-bold text-foreground flex items-center gap-1">
+                    🔓 비로그인 기본 상태
+                  </span>
+                  <span className="text-muted-foreground text-[11px] leading-normal">
+                    실시간 파싱된 주요 뉴스 헤드라인 및 -40% 폭락 수치 데이터를 기본 제공합니다.
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 rounded-lg bg-purple-500/10 p-2.5 border border-purple-500/30">
+                  <span className="font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                    ⚡ Google OAuth 로그인 시 (Gemini AI)
+                  </span>
+                  <span className="text-muted-foreground text-[11px] leading-normal">
+                    수집된 뉴스 팩트를 Gemini LLM에 주입(RAG)하여 <strong>'왜 폭락했는지의 구조적 원인'</strong>과 <strong>'언제부터 시작일로 삼아야 하는지'</strong>를 정밀 추론합니다.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
+                <span className="text-[11px] text-muted-foreground">
+                  * 개발자 공용 API 키 소진 없이 본인의 구글 쿼터로 안전하게 연동됩니다.
+                </span>
+                <GoogleAuthButton onTokenChange={(newToken) => setUserToken(newToken)} />
+              </div>
             </div>
           </div>
         )}
