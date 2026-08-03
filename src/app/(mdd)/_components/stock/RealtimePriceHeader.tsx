@@ -1,8 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getKrStockPriceAction, type KrPriceResponse } from '@/app/(mdd)/_lib/actions'
 import { Text } from '@/components/ui/text'
 
 interface RealtimePriceHeaderProps {
@@ -16,7 +14,6 @@ interface RealtimePriceHeaderProps {
 }
 
 export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
-  stockCode,
   initialClosePrice,
   initialCompareText,
   initialRatio,
@@ -27,39 +24,14 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
   const [flash, setFlash] = useState<'UP' | 'DOWN' | null>(null)
   const prevPriceRef = useRef<string>(initialClosePrice)
 
-  const { data } = useQuery<KrPriceResponse>({
-    queryKey: ['kr-stock-price', stockCode],
-    queryFn: () => getKrStockPriceAction(stockCode),
-    staleTime: 5 * 60_000,
-    initialData: {
-      stockCode,
-      stockName: stockCode,
-      closePrice: initialClosePrice,
-      compareToPreviousPriceText: initialCompareText,
-      fluctuationsRatio: initialRatio,
-      isRising: initialIsRising,
-      isFalling: initialIsFalling,
-      fetchedAt: initialFetchedAt || new Date().toISOString(),
-    },
-  })
-
-  const priceInfo = {
-    closePrice: data.closePrice,
-    compareToPreviousPriceText: data.compareToPreviousPriceText,
-    fluctuationsRatio: data.fluctuationsRatio,
-    isRising: data.isRising,
-    isFalling: data.isFalling,
-    updatedAt: new Date(data.fetchedAt).toLocaleTimeString(),
-  }
-
   useEffect(() => {
-    if (prevPriceRef.current !== data.closePrice) {
+    if (prevPriceRef.current !== initialClosePrice) {
       const prevNum = parseFloat(prevPriceRef.current.replace(/,/g, '')) || 0
-      const currNum = parseFloat(data.closePrice.replace(/,/g, '')) || 0
+      const currNum = parseFloat(initialClosePrice.replace(/,/g, '')) || 0
 
-      if (currNum > prevNum) {
+      if (currNum > prevNum && prevNum > 0) {
         setFlash('UP')
-      } else if (currNum < prevNum) {
+      } else if (currNum < prevNum && prevNum > 0) {
         setFlash('DOWN')
       }
 
@@ -67,13 +39,14 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
         setFlash(null)
       }, 1000)
 
-      prevPriceRef.current = data.closePrice
+      prevPriceRef.current = initialClosePrice
       return () => clearTimeout(timer)
     }
-  }, [data.closePrice])
+  }, [initialClosePrice])
 
   const priceColor = flash === 'UP' ? 'up' : flash === 'DOWN' ? 'down' : 'default'
-  const changeColor = priceInfo.isRising ? 'up' : priceInfo.isFalling ? 'down' : 'muted'
+  const changeColor = initialIsRising ? 'up' : initialIsFalling ? 'down' : 'muted'
+  const updatedAt = initialFetchedAt ? new Date(initialFetchedAt).toLocaleTimeString() : ''
 
   return (
     <div className="flex flex-col items-end">
@@ -87,23 +60,25 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
         }`}
       >
         <Text as="span" variant="h3" textColor={priceColor} className="font-extrabold tracking-tight">
-          {priceInfo.closePrice}원
+          {initialClosePrice}원
         </Text>
 
         <p className="flex items-center">
           <Text as="span" variant="small" textColor={changeColor} className="font-semibold">
-            {priceInfo.isRising ? '▲ ' : priceInfo.isFalling ? '▼ ' : ''}
-            {priceInfo.compareToPreviousPriceText}
+            {initialIsRising ? '▲ ' : initialIsFalling ? '▼ ' : ''}
+            {initialCompareText}
           </Text>
           <Text as="span" variant="mono" textColor={changeColor} className="ml-1 font-semibold">
-            ({priceInfo.isRising ? '+' : ''}{priceInfo.fluctuationsRatio}%)
+            ({initialIsRising ? '+' : ''}{initialRatio}%)
           </Text>
         </p>
       </div>
 
-      <Text as="span" variant="mono" textColor="subtle" className="mt-0.5 text-[11px]" suppressHydrationWarning>
-        실시간 시세 갱신: {priceInfo.updatedAt}
-      </Text>
+      {updatedAt && (
+        <Text as="span" variant="mono" textColor="subtle" className="mt-0.5 text-[11px]" suppressHydrationWarning>
+          실시간 시세 갱신: {updatedAt}
+        </Text>
+      )}
     </div>
   )
 }

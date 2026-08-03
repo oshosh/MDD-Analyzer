@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import type { KrStockIntegrationData } from '@/lib/types'
 import { browserApiClient } from '@/lib/http/axios'
 import { RealtimePriceHeader } from './RealtimePriceHeader'
@@ -26,7 +26,6 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
   stockCode,
   stockName,
 }) => {
-  const queryClient = useQueryClient()
   const [selectedDayIdx, setSelectedDayIdx] = useState<number>(0)
   const [marketType, setMarketType] = useState<MarketType>('TOTAL')
   const [displayMode, setDisplayMode] = useState<DisplayMode>('VOLUME')
@@ -41,10 +40,7 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
   })
 
   const handleManualRefresh = async () => {
-    await Promise.all([
-      refetch(),
-      queryClient.invalidateQueries({ queryKey: ['kr-stock-price', stockCode] }),
-    ])
+    await refetch()
   }
 
   if (isLoading || !data) {
@@ -219,13 +215,25 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
           {intradayEst && (
             <Card className="space-y-4 border border-slate-800 bg-slate-950/70 p-5">
               <div className="flex flex-col items-start justify-between gap-2 border-b border-slate-800/80 pb-3 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
-                  <h3 className="flex items-center gap-2 text-sm font-bold text-slate-100">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      intradayEst.foreignBuyQuant > 0 || intradayEst.foreignSellQuant > 0
+                        ? 'animate-pulse bg-emerald-400'
+                        : 'bg-amber-400'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <h3 className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-100">
                     외국계 거래원 장중 누적 가집계 추정치
                     <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 font-sans text-[10px] text-emerald-300">
                       {intradayEst.bizdate.slice(0, 4)}-{intradayEst.bizdate.slice(4, 6)}-{intradayEst.bizdate.slice(6, 8)} 당일 장중
                     </Badge>
+                    {intradayEst.foreignBuyQuant === 0 && intradayEst.foreignSellQuant === 0 && (
+                      <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 font-sans text-[10px] text-amber-300">
+                        집계 대기중 (장 개장 후 09:30부터 순차 집계)
+                      </Badge>
+                    )}
                   </h3>
                 </div>
                 <span className="text-xs text-slate-400">※ 상위 5개 외국계 증권사 창구 합산 추정 수치</span>

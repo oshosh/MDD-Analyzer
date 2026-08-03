@@ -26,23 +26,33 @@ const NAVER_HEADERS = {
  * 순매수량 = (매수량 - 매도량)을 정확히 수학적으로 계산합니다.
  */
 async function fetchIntradayForeignEstimate(stockCode: string, currentPrice: number): Promise<IntradayForeignEstimate | null> {
+  const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
+  const todayBizdate = nowKst.toISOString().slice(0, 10).replace(/-/g, '')
+  const fallback: IntradayForeignEstimate = {
+    bizdate: todayBizdate,
+    foreignSellQuant: 0,
+    foreignBuyQuant: 0,
+    foreignNetBuyQuant: 0,
+    foreignNetBuyValue: 0,
+  }
+
   try {
     const url = `https://finance.naver.com/item/frgn.naver?code=${stockCode}`
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
       cache: 'no-store',
     })
 
-    if (!res.ok) return null
+    if (!res.ok) return fallback
 
     const buffer = await res.arrayBuffer()
     const decoder = new TextDecoder('euc-kr')
     const html = decoder.decode(buffer)
 
     const foreignIdx = html.indexOf('외국계추정합')
-    if (foreignIdx === -1) return null
+    if (foreignIdx === -1) return fallback
 
     const section = html.slice(foreignIdx, foreignIdx + 600)
     const matches = [...section.matchAll(/<span[^>]*class="tah[^"]*"[^>]*>([+-]?[\d,]+)<\/span>/g)]
@@ -55,9 +65,6 @@ async function fetchIntradayForeignEstimate(stockCode: string, currentPrice: num
       const netBuyQuant = buyQuant - sellQuant
       const netBuyValue = Math.round((netBuyQuant * currentPrice) / 100000000)
 
-      const nowKst = new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
-      const todayBizdate = nowKst.toISOString().slice(0, 10).replace(/-/g, '')
-
       return {
         bizdate: todayBizdate,
         foreignSellQuant: sellQuant,
@@ -66,10 +73,11 @@ async function fetchIntradayForeignEstimate(stockCode: string, currentPrice: num
         foreignNetBuyValue: netBuyValue,
       }
     }
+    return fallback
   } catch (err) {
     console.error(`[krStockService] Intraday Foreign Estimate Error (${stockCode}):`, err)
+    return fallback
   }
-  return null
 }
 
 /**
