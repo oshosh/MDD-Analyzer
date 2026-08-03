@@ -218,22 +218,22 @@ export default function ChartsPanel({ charts }: ChartsPanelProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <SeriesChart
-        title="MDD USD (Risk)"
+        title="달러 기준 최대 낙폭 추이 (USD Drawdown)"
         rows={charts.mdd_usd}
         color="#ef4444"
       />
       <SeriesChart
-        title="MDD KRW (Risk)"
+        title="원화 기준 최대 낙폭 추이 (KRW Drawdown)"
         rows={charts.mdd_krw}
         color="#f97316"
       />
       <SeriesChart
-        title="Cumulative Return USD"
+        title="달러 기준 누적 수익률 (USD Cumulative Return)"
         rows={charts.cumulative_usd}
         color="#10b981"
       />
       <SeriesChart
-        title="Cumulative Return KRW"
+        title="원화 기준 누적 수익률 (KRW Cumulative Return)"
         rows={charts.cumulative_krw}
         color="#3b82f6"
       />

@@ -11,6 +11,7 @@ import { InvestorTrendTab } from '@/app/(mdd)/_components/stock/InvestorTrendTab
 import BuySignalPanel from '@/app/(mdd)/_components/BuySignalPanel'
 import AnalyticsPanel from '@/app/(mdd)/_components/AnalyticsPanel'
 import ChartsPanel from '@/app/(mdd)/_components/ChartsPanel'
+import NormalDistributionChart from '@/app/(mdd)/_components/NormalDistributionChart'
 
 interface MddContentDisplayProps {
   data: RawApiResponse
@@ -56,10 +57,15 @@ export default function MddContentDisplay({ data, query }: MddContentDisplayProp
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
             <div className="bg-primary h-6 w-1.5 rounded-full" />
-            Risk Analysis
+            Risk Analysis & Normal Distribution
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6">
+          <NormalDistributionChart
+            drawdowns={data.raw.map((r) => r.drawdown_krw)}
+            currentDrawdown={data.summary.krw.current_drawdown}
+            title="원화(KRW) 기준 과거 낙폭 정규분포(Bell Curve) 상 현재 위치"
+          />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <RecoveryTable
               title={'USD Recovery Rates'}
