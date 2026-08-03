@@ -1,12 +1,24 @@
 // src/app/(mdd)/_components/DrawdownCycleTimeline.tsx
 'use client'
 
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, TrendingDown } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  TrendingDown,
+  Newspaper,
+  BarChart2,
+  Info,
+  Sparkles,
+  Lock,
+} from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import type { DrawdownCycle } from '@/lib/types'
-import { useState } from 'react'
+import { getNewsContextForCycle } from '../_lib/newsContext'
 
 interface DrawdownCycleTimelineProps {
   cycles: DrawdownCycle[]
@@ -22,9 +34,9 @@ function formatPrice(price: number): string {
     return `₩${price.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`
   }
   if (price >= 100) {
-    return `$${price.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+    return `₩${price.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`
   }
-  return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`
+  return `₩${price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`
 }
 
 function formatDateShort(dateStr: string): string {
@@ -33,10 +45,10 @@ function formatDateShort(dateStr: string): string {
 }
 
 function getDrawdownColor(dd: number): string {
-  if (dd <= -0.8) return 'text-red-500'
-  if (dd <= -0.6) return 'text-orange-500'
-  if (dd <= -0.4) return 'text-amber-500'
-  return 'text-yellow-500'
+  if (dd <= -0.8) return 'text-red-500 font-black'
+  if (dd <= -0.6) return 'text-orange-500 font-bold'
+  if (dd <= -0.4) return 'text-amber-500 font-bold'
+  return 'text-yellow-500 font-semibold'
 }
 
 function getDrawdownBg(dd: number): string {
@@ -53,16 +65,16 @@ export default function DrawdownCycleTimeline({
 }: DrawdownCycleTimelineProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [activeTab, setActiveTab] = useState<'data' | 'news'>('news')
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showFormulaInfo, setShowFormulaInfo] = useState(false)
 
-  // 주요 하락 사이클이 2개 미만이면 표시하지 않음 (경고할 필요 없음)
+  // 주요 하락 사이클이 2개 미만이면 표시하지 않음
   if (cycles.length < 2) return null
 
   const currentCycle = cycles.find((c) => c.isCurrent)
   const pastCycles = cycles.filter((c) => !c.isCurrent)
 
-  // "최근 사이클 기준 재분석" 시작일 계산
-  // 마지막 완료된 사이클이 끝난 후(= 다음 ATH 시작), 또는 현재 사이클의 고점
   const recommendedStartDate = currentCycle
     ? currentCycle.peakDate
     : pastCycles.length > 0
@@ -78,89 +90,158 @@ export default function DrawdownCycleTimeline({
   }
 
   return (
-    <Card className="border-amber-500/30 bg-amber-500/5 dark:border-amber-500/20 dark:bg-amber-950/20">
-      <CardHeader className="pb-3">
+    <Card className="border-amber-500/30 bg-amber-500/5 dark:border-amber-500/20 dark:bg-amber-950/20 shadow-md">
+      <CardHeader className="pb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="flex items-center gap-2 text-base font-bold">
-          <AlertTriangle className="h-5 w-5 text-amber-500" />
+          <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
           <span>
-            이 종목은{' '}
-            <span className="text-amber-500">{cycles.length}번</span>의 대규모
-            하락(-40% 이상)을 경험했습니다
+            이 종목은 <span className="text-amber-500">{cycles.length}번</span>의 대규모 하락(-40% 이상)을 경험했습니다
           </span>
         </CardTitle>
+
+        {/* 탭 토글버튼 (데이터 기반 vs 뉴스 & AI 맥락 기반) */}
+        <div className="flex items-center rounded-lg bg-background/80 p-1 border shadow-sm self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('news')}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition-all ${
+              activeTab === 'news'
+                ? 'bg-amber-500 text-white shadow'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Newspaper className="h-3.5 w-3.5" />
+            📰 뉴스 & 이슈 분석
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('data')}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition-all ${
+              activeTab === 'data'
+                ? 'bg-amber-500 text-white shadow'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <BarChart2 className="h-3.5 w-3.5" />
+            📊 데이터 기준 분석
+          </button>
+        </div>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        {/* 타임라인 */}
-        <div className="flex flex-col gap-2">
-          {/* 항상 현재 사이클 + 최근 1개는 표시 */}
-          {(isExpanded ? cycles : cycles.slice(-Math.min(3, cycles.length))).map(
-            (cycle, idx) => (
-              <div
-                key={`${cycle.peakDate}-${idx}`}
-                className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${getDrawdownBg(cycle.drawdown)} ${cycle.isCurrent ? 'ring-2 ring-amber-500/40' : ''}`}
-              >
-                {/* 번호 */}
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/10 text-xs font-bold dark:bg-white/10">
-                  {isExpanded
-                    ? idx + 1
-                    : cycles.length - Math.min(3, cycles.length) + idx + 1}
-                </div>
-
-                {/* 기간 */}
-                <div className="flex flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                  <span className="font-semibold">
-                    {formatDateShort(cycle.peakDate)}
-                  </span>
-                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                  <span className="font-semibold">
-                    {cycle.isCurrent ? '현재' : formatDateShort(cycle.troughDate)}
-                  </span>
-
-                  <span className="text-muted-foreground">|</span>
-
-                  <span className="text-muted-foreground text-xs">
-                    {formatPrice(cycle.peakPrice)} → {formatPrice(cycle.troughPrice)}
-                  </span>
-
-                  <span className="text-muted-foreground">|</span>
-
-                  <span className={`font-black ${getDrawdownColor(cycle.drawdown)}`}>
-                    {(cycle.drawdown * 100).toFixed(1)}%
-                  </span>
-
-                  {cycle.isCurrent && (
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-500">
-                      ← 현재 진행 중
-                    </span>
-                  )}
-                </div>
+        {/* 모드 1: 📊 순수 데이터 기반 모드 */}
+        {activeTab === 'data' && (
+          <div className="flex flex-col gap-3 animate-in fade-in duration-300">
+            {/* 산출 근거 안내 박스 */}
+            <div className="flex items-start gap-2 rounded-lg bg-background/60 p-3 text-xs text-muted-foreground border">
+              <Info className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-foreground">데이터 산출 근거:</strong> 전체 역사 중 직전 고점(ATH) 대비 낙폭이 <code className="bg-muted px-1 py-0.5 rounded font-mono text-amber-600">-40%</code> 이하로 폭락했던 대세 하락 구간만 수치적으로 자동 추출한 결과입니다.
               </div>
-            )
-          )}
+            </div>
 
-          {/* 더보기/접기 버튼 */}
-          {cycles.length > 3 && (
-            <button
-              type="button"
-              className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => setIsExpanded((prev) => !prev)}
-            >
-              {isExpanded ? (
-                <>
-                  접기 <ChevronUp className="h-3 w-3" />
-                </>
-              ) : (
-                <>
-                  {cycles.length - 3}개 더 보기{' '}
-                  <ChevronDown className="h-3 w-3" />
-                </>
-              )}
-            </button>
-          )}
-        </div>
+            <div className="flex flex-col gap-2">
+              {(isExpanded ? cycles : cycles.slice(-Math.min(3, cycles.length))).map((cycle, idx) => (
+                <div
+                  key={`${cycle.peakDate}-${idx}`}
+                  className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${getDrawdownBg(cycle.drawdown)} ${cycle.isCurrent ? 'ring-2 ring-amber-500/40' : ''}`}
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/10 text-xs font-bold dark:bg-white/10">
+                    {isExpanded ? idx + 1 : cycles.length - Math.min(3, cycles.length) + idx + 1}
+                  </div>
+                  <div className="flex flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                    <span className="font-semibold">{formatDateShort(cycle.peakDate)}</span>
+                    <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                    <span className="font-semibold">{cycle.isCurrent ? '현재' : formatDateShort(cycle.troughDate)}</span>
+                    <span className="text-muted-foreground">|</span>
+                    <span className="text-muted-foreground text-xs">{formatPrice(cycle.peakPrice)} → {formatPrice(cycle.troughPrice)}</span>
+                    <span className="text-muted-foreground">|</span>
+                    <span className={getDrawdownColor(cycle.drawdown)}>{(cycle.drawdown * 100).toFixed(1)}%</span>
+                    {cycle.isCurrent && (
+                      <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-500">← 현재 진행 중</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        {/* 추천 재분석 안내 */}
+        {/* 모드 2: 📰 뉴스 & 이슈 맥락 분석 모드 (무료 뉴스 + 구글 로그인 세션 안심 가드 연동) */}
+        {activeTab === 'news' && (
+          <div className="flex flex-col gap-3 animate-in fade-in duration-300">
+            <div className="flex flex-col gap-3">
+              {(isExpanded ? cycles : cycles.slice(-Math.min(3, cycles.length))).map((cycle, idx) => {
+                const newsCtx = getNewsContextForCycle(symbol, cycle.peakDate, cycle.troughDate)
+                return (
+                  <div
+                    key={`news-${cycle.peakDate}-${idx}`}
+                    className={`flex flex-col gap-2 rounded-xl border p-4 transition-all ${getDrawdownBg(cycle.drawdown)}`}
+                  >
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
+                          {isExpanded ? idx + 1 : cycles.length - Math.min(3, cycles.length) + idx + 1}
+                        </span>
+                        <span className="font-bold text-sm">
+                          {formatDateShort(cycle.peakDate)} ~ {cycle.isCurrent ? '현재 진행 중' : formatDateShort(cycle.troughDate)}
+                        </span>
+                      </div>
+                      <span className={`text-sm ${getDrawdownColor(cycle.drawdown)}`}>
+                        {(cycle.drawdown * 100).toFixed(1)}% 폭락
+                      </span>
+                    </div>
+
+                    {/* 뉴스 & 배경 맥락 요약 */}
+                    <div className="flex flex-col gap-1 pt-1">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
+                        <Newspaper className="h-3.5 w-3.5" />
+                        <span>주요 폭락 배경: {newsCtx.headline}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed pl-5">
+                        {newsCtx.snippet}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Google OAuth & Gemini AI 보안 혜택 안내 (무DB 안전 JWT 모드) */}
+            <div className="mt-1 flex items-center justify-between rounded-lg bg-background/80 p-3 border text-xs">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-500 animate-pulse" />
+                <span>
+                  <strong className="text-foreground">AI 심층 뉴스 분석:</strong> 구글 계정으로 연동 시(무DB 세션) 1일 5회까지 Gemini AI가 당시 산업 뉴스 맥락을 심층 요약해줍니다.
+                </span>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">
+                <Lock className="h-3 w-3" /> 무DB 보안 세션
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* 더보기 / 접기 버튼 */}
+        {cycles.length > 3 && (
+          <button
+            type="button"
+            className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+            onClick={() => setIsExpanded((prev) => !prev)}
+          >
+            {isExpanded ? (
+              <>
+                접기 <ChevronUp className="h-3 w-3" />
+              </>
+            ) : (
+              <>
+                {cycles.length - 3}개 더 보기 <ChevronDown className="h-3 w-3" />
+              </>
+            )}
+          </button>
+        )}
+
+        {/* 최근 사이클 기준 재분석 추천 */}
         {recommendedStartDate && currentCycle && (
           <div className="flex flex-col gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 dark:bg-emerald-950/20">
             <div className="flex items-center gap-2 text-sm">
@@ -170,14 +251,13 @@ export default function DrawdownCycleTimeline({
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              과거의 극단적 하락 이벤트가 현재 분석을 왜곡할 수 있습니다.
-              최근 사이클({formatDateShort(recommendedStartDate)}~) 기준으로
-              재분석하면 현재 상황에 더 적합한 리스크 판단이 가능합니다.
+              과거 20년 전의 극단적 하락 이벤트(워크아웃 등)가 현재 분석을 왜곡할 수 있습니다.
+              최근 사이클({formatDateShort(recommendedStartDate)}~) 기준으로 재분석하면 현재 상황에 훨씬 더 적합한 실질 리스크 판단이 가능합니다.
             </p>
             <Button
               variant="outline"
               size="sm"
-              className="w-fit border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-400"
+              className="w-fit border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-400 font-bold"
               onClick={() => handleReanalyze(recommendedStartDate)}
             >
               {formatDateShort(recommendedStartDate)}부터 재분석
@@ -189,3 +269,4 @@ export default function DrawdownCycleTimeline({
     </Card>
   )
 }
+
