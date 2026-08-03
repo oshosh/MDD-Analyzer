@@ -3,9 +3,8 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { LogIn, LogOut, CheckCircle2 } from 'lucide-react'
+import { LogIn, LogOut, CheckCircle2, Sparkles } from 'lucide-react'
 
-// 브라우저 localStorage 키 (DB 0개)
 const STORAGE_KEY = 'mdd_google_user_token'
 
 export function getStoredUserToken(): string | null {
@@ -38,35 +37,64 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
     if (onTokenChange) onTokenChange(existing)
   }, [onTokenChange])
 
-  // 구글 OAuth 원클릭 인증 (Google Identity Services)
+  // 카카오 로그인 방식처럼 원클릭 팝업 창 연동
   function handleGoogleLogin() {
-    // 구글 GIS Client 모듈 동적 구성
-    const client_id = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'DEMO_GOOGLE_CLIENT_ID'
-    
-    // OAuth 2.0 Implicit Grant / Token Client 호출
-    if (typeof window !== 'undefined' && (window as any).google?.accounts?.oauth2) {
-      const client = (window as any).google.accounts.oauth2.initTokenClient({
-        client_id,
-        scope: 'https://www.googleapis.com/auth/generative-language',
-        callback: (response: any) => {
-          if (response.access_token) {
-            setStoredUserToken(response.access_token)
-            setToken(response.access_token)
-            if (onTokenChange) onTokenChange(response.access_token)
-          }
-        },
-      })
-      client.requestAccessToken()
-    } else {
-      // 대안: 구글 OAuth 토큰 간편 등록 프롬프트
-      const userPromptToken = prompt(
-        'Google OAuth 인증 토큰(또는 본인의 구글 Access Token)을 입력하시면 개인 구글 쿼터로 Gemini LLM을 직접 호출합니다.\n(DB에 절대 저장되지 않고 브라우저에만 유지됩니다):'
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
+
+    // 구글 OAuth2 팝업창 인증 URL 구성
+    const redirectUri = typeof window !== 'undefined' ? `${window.location.origin}` : ''
+    const scope = 'https://www.googleapis.com/auth/generative-language'
+
+    if (clientId) {
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
+        clientId
+      )}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=token&scope=${encodeURIComponent(scope)}`
+
+      const width = 500
+      const height = 600
+      const left = window.screenX + (window.outerWidth - width) / 2
+      const top = window.screenY + (window.outerHeight - height) / 2
+
+      const popup = window.open(
+        authUrl,
+        'GoogleLoginPopup',
+        `width=${width},height=${height},left=${left},top=${top}`
       )
-      if (userPromptToken && userPromptToken.trim()) {
-        const cleanToken = userPromptToken.trim()
-        setStoredUserToken(cleanToken)
-        setToken(cleanToken)
-        if (onTokenChange) onTokenChange(cleanToken)
+
+      // 팝업 응답 감지 (해시 토큰 수신)
+      const timer = setInterval(() => {
+        try {
+          if (!popup || popup.closed) {
+            clearInterval(timer)
+            return
+          }
+          if (popup.location.href.includes('access_token=')) {
+            const hashParams = new URLSearchParams(popup.location.hash.substring(1))
+            const accessToken = hashParams.get('access_token')
+            if (accessToken) {
+              setStoredUserToken(accessToken)
+              setToken(accessToken)
+              if (onTokenChange) onTokenChange(accessToken)
+              popup.close()
+              clearInterval(timer)
+            }
+          }
+        } catch {
+          // Cross-origin access pending
+        }
+      }, 500)
+    } else {
+      // Client ID 미설정 시 데모 팝업 토큰 수신 처리
+      const demoToken = prompt(
+        'Google Cloud OAuth Client ID가 아직 설정되지 않았습니다.\n테스트를 위한 Google OAuth Access Token을 넣어주시면 원클릭 로그인으로 처리됩니다:'
+      )
+      if (demoToken && demoToken.trim()) {
+        const clean = demoToken.trim()
+        setStoredUserToken(clean)
+        setToken(clean)
+        if (onTokenChange) onTokenChange(clean)
       }
     }
   }
@@ -81,7 +109,7 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
     return (
       <div className="flex items-center gap-2">
         <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Google OAuth 인증됨
+          <CheckCircle2 className="h-3.5 w-3.5" /> 구글 로그인 완료
         </span>
         <Button
           variant="ghost"
@@ -100,10 +128,10 @@ export function GoogleAuthButton({ onTokenChange }: GoogleAuthButtonProps) {
       variant="outline"
       size="sm"
       onClick={handleGoogleLogin}
-      className="h-8 border-purple-500/30 text-purple-700 hover:bg-purple-500/10 dark:text-purple-400 font-bold text-xs"
+      className="h-8 border-purple-500/30 text-purple-700 hover:bg-purple-500/10 dark:text-purple-400 font-bold text-xs shadow-sm transition-all hover:scale-[1.02]"
     >
-      <LogIn className="h-3.5 w-3.5 mr-1 text-purple-500" />
-      Google OAuth 로그인 (내 쿼터로 Gemini AI 연동)
+      <Sparkles className="h-3.5 w-3.5 mr-1 text-purple-500" />
+      G 구글 계정으로 로그인 (Gemini AI 연동)
     </Button>
   )
 }
