@@ -121,8 +121,9 @@ export async function getAiCycleAnalysisAction(
   symbol: string,
   peakDate: string,
   troughDate: string,
-  drawdown: number
+  drawdown: number,
+  userAccessToken?: string | null
 ) {
   const { analyzeCycleWithRagAndLlm } = await import('./aiCycleService')
-  return analyzeCycleWithRagAndLlm(symbol, peakDate, troughDate, drawdown)
+  return analyzeCycleWithRagAndLlm(symbol, peakDate, troughDate, drawdown, userAccessToken)
 }

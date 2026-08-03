@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import type { DrawdownCycle } from '@/lib/types'
 import { getAiCycleAnalysisAction } from '../_lib/actions'
 import type { AiCycleAnalysisResult } from '../_lib/aiCycleService'
+import { GoogleAuthButton, getStoredUserToken } from './GoogleAuthButton'
 
 interface DrawdownCycleTimelineProps {
   cycles: DrawdownCycle[]
@@ -69,6 +70,7 @@ export default function DrawdownCycleTimeline({
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<'data' | 'news'>('news')
   const [isExpanded, setIsExpanded] = useState(false)
+  const [userToken, setUserToken] = useState<string | null>(null)
   const [ragAnalysisMap, setRagAnalysisMap] = useState<Record<string, AiCycleAnalysisResult>>({})
   const [isLoadingRag, setIsLoadingRag] = useState(false)
 
@@ -84,13 +86,16 @@ export default function DrawdownCycleTimeline({
       ? pastCycles[pastCycles.length - 1].troughDate
       : null
 
-  // 실시간 RAG (뉴스 파싱) + LLM 사전 주입 비동기 로딩
+  // 사용자 구글 OAuth 토큰 및 실시간 RAG + LLM 추론 실행
   useEffect(() => {
     let isMounted = true
+    const token = getStoredUserToken()
+    setUserToken(token)
+
     async function loadRagAnalysis() {
       setIsLoadingRag(true)
       const newMap: Record<string, AiCycleAnalysisResult> = {}
-      
+
       for (const cycle of cycles) {
         const key = `${cycle.peakDate}-${cycle.troughDate}`
         try {
@@ -98,7 +103,8 @@ export default function DrawdownCycleTimeline({
             symbol,
             cycle.peakDate,
             cycle.troughDate,
-            cycle.drawdown
+            cycle.drawdown,
+            token
           )
           if (isMounted) {
             newMap[key] = res
@@ -117,7 +123,7 @@ export default function DrawdownCycleTimeline({
     return () => {
       isMounted = false
     }
-  }, [symbol, cycles])
+  }, [symbol, cycles, userToken])
 
   function handleReanalyze(startDate: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -262,17 +268,15 @@ export default function DrawdownCycleTimeline({
               })}
             </div>
 
-            {/* AI RAG 파이프라인 안내 */}
-            <div className="mt-1 flex items-center justify-between rounded-lg bg-background/80 p-3 border text-xs">
+            {/* Google OAuth & Gemini AI 보안 혜택 안내 (무DB 안전 토큰 모드) */}
+            <div className="mt-1 flex flex-col gap-2 rounded-lg bg-background/80 p-3 border text-xs sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-500 animate-pulse" />
+                <Sparkles className="h-4 w-4 text-purple-500 animate-pulse shrink-0" />
                 <span>
-                  <strong className="text-foreground">실시간 RAG 뉴스 파이프라인:</strong> 개발자 하드코딩 0%! 당시 실제 수집된 뉴스를 Gemini LLM에 사전 주입(Context Injection)하여 팩트 기반 판단을 수행합니다.
+                  <strong className="text-foreground">Google OAuth Gemini 연동:</strong> 개발자 공용 키 0%! 구글 로그인을 통해 사용자의 OAuth 권한으로 Gemini LLM을 직접 안전하게 호출합니다.
                 </span>
               </div>
-              <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">
-                <Lock className="h-3 w-3" /> 팩트 기반 RAG
-              </span>
+              <GoogleAuthButton onTokenChange={(newToken) => setUserToken(newToken)} />
             </div>
           </div>
         )}

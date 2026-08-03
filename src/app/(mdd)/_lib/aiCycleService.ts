@@ -20,7 +20,8 @@ export async function analyzeCycleWithRagAndLlm(
   symbol: string,
   peakDate: string,
   troughDate: string,
-  drawdown: number
+  drawdown: number,
+  userAccessToken?: string | null
 ): Promise<AiCycleAnalysisResult> {
   // 1단계: 실시간 실제 뉴스/이벤트 수집 (RAG 팩트 수집)
   const realtimeNews: RealtimeNewsSnippet[] = await fetchRealtimeNewsForPeriod(
@@ -33,10 +34,8 @@ export async function analyzeCycleWithRagAndLlm(
     ? realtimeNews.map((n, i) => `[뉴스 ${i + 1}] ${n.title} - ${n.snippet}`).join('\n')
     : '당시 특정 개별 헤드라인 미발견 (전반적인 고점 매물 소화 및 업황 조정 구간)'
 
-  const apiKey = process.env.GEMINI_API_KEY
-
-  // 2단계: GEMINI_API_KEY가 있는 경우 RAG 뉴스 텍스트를 LLM에 사전 주입하여 팩트 추론
-  if (apiKey) {
+  // 2단계: 사용자의 Google OAuth Access Token이 전달된 경우, 유저 본인의 구글 권한으로 Gemini RAG 호출
+  if (userAccessToken) {
     try {
       const prompt = `
 당신은 자산 리스크 분석 전문가입니다.
@@ -58,11 +57,15 @@ ${newsContextText}
 }
 `
 
+      // 유저의 OAuth Access Token을 Bearer 헤더에 실어 Google Gemini REST API 직접 호출
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userAccessToken}`,
+          },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
           }),
@@ -89,7 +92,7 @@ ${newsContextText}
         }
       }
     } catch (error) {
-      console.warn('[AI Cycle Service] Gemini RAG invocation failed, switching to RAG-fallback:', error)
+      console.warn('[AI Cycle Service] User OAuth Gemini RAG invocation failed, switching to RAG-fallback:', error)
     }
   }
 
