@@ -113,3 +113,16 @@ export async function searchSymbolsAction(query: string) {
   }
   return await searchInstruments(query)
 }
+
+/**
+ * 실시간 RAG (뉴스 수집) + LLM 사전 주입 Server Action
+ */
+export async function getAiCycleAnalysisAction(
+  symbol: string,
+  peakDate: string,
+  troughDate: string,
+  drawdown: number
+) {
+  const { analyzeCycleWithRagAndLlm } = await import('./aiCycleService')
+  return analyzeCycleWithRagAndLlm(symbol, peakDate, troughDate, drawdown)
+}

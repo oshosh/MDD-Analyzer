@@ -1,7 +1,7 @@
 // src/app/(mdd)/_components/DrawdownCycleTimeline.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   AlertTriangle,
@@ -14,11 +14,13 @@ import {
   Info,
   Sparkles,
   Lock,
+  Loader2,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import type { DrawdownCycle } from '@/lib/types'
-import { getNewsContextForCycle } from '../_lib/newsContext'
+import { getAiCycleAnalysisAction } from '../_lib/actions'
+import type { AiCycleAnalysisResult } from '../_lib/aiCycleService'
 
 interface DrawdownCycleTimelineProps {
   cycles: DrawdownCycle[]
@@ -67,7 +69,8 @@ export default function DrawdownCycleTimeline({
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<'data' | 'news'>('news')
   const [isExpanded, setIsExpanded] = useState(false)
-  const [showFormulaInfo, setShowFormulaInfo] = useState(false)
+  const [ragAnalysisMap, setRagAnalysisMap] = useState<Record<string, AiCycleAnalysisResult>>({})
+  const [isLoadingRag, setIsLoadingRag] = useState(false)
 
   // 주요 하락 사이클이 2개 미만이면 표시하지 않음
   if (cycles.length < 2) return null
@@ -80,6 +83,41 @@ export default function DrawdownCycleTimeline({
     : pastCycles.length > 0
       ? pastCycles[pastCycles.length - 1].troughDate
       : null
+
+  // 실시간 RAG (뉴스 파싱) + LLM 사전 주입 비동기 로딩
+  useEffect(() => {
+    let isMounted = true
+    async function loadRagAnalysis() {
+      setIsLoadingRag(true)
+      const newMap: Record<string, AiCycleAnalysisResult> = {}
+      
+      for (const cycle of cycles) {
+        const key = `${cycle.peakDate}-${cycle.troughDate}`
+        try {
+          const res = await getAiCycleAnalysisAction(
+            symbol,
+            cycle.peakDate,
+            cycle.troughDate,
+            cycle.drawdown
+          )
+          if (isMounted) {
+            newMap[key] = res
+          }
+        } catch {
+          // ignore
+        }
+      }
+      if (isMounted) {
+        setRagAnalysisMap(newMap)
+        setIsLoadingRag(false)
+      }
+    }
+
+    loadRagAnalysis()
+    return () => {
+      isMounted = false
+    }
+  }, [symbol, cycles])
 
   function handleReanalyze(startDate: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -99,7 +137,7 @@ export default function DrawdownCycleTimeline({
           </span>
         </CardTitle>
 
-        {/* 탭 토글버튼 (데이터 기반 vs 뉴스 & AI 맥락 기반) */}
+        {/* 탭 토글버튼 */}
         <div className="flex items-center rounded-lg bg-background/80 p-1 border shadow-sm self-start sm:self-auto">
           <button
             type="button"
@@ -111,7 +149,7 @@ export default function DrawdownCycleTimeline({
             }`}
           >
             <Newspaper className="h-3.5 w-3.5" />
-            📰 뉴스 & 이슈 분석
+            📰 뉴스 & AI 맥락 분석 (RAG)
           </button>
           <button
             type="button"
@@ -132,7 +170,6 @@ export default function DrawdownCycleTimeline({
         {/* 모드 1: 📊 순수 데이터 기반 모드 */}
         {activeTab === 'data' && (
           <div className="flex flex-col gap-3 animate-in fade-in duration-300">
-            {/* 산출 근거 안내 박스 */}
             <div className="flex items-start gap-2 rounded-lg bg-background/60 p-3 text-xs text-muted-foreground border">
               <Info className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
               <div>
@@ -167,12 +204,21 @@ export default function DrawdownCycleTimeline({
           </div>
         )}
 
-        {/* 모드 2: 📰 뉴스 & 이슈 맥락 분석 모드 (무료 뉴스 + 구글 로그인 세션 안심 가드 연동) */}
+        {/* 모드 2: 📰 실시간 RAG (뉴스 파싱) + LLM 사전 주입 분석 모드 */}
         {activeTab === 'news' && (
           <div className="flex flex-col gap-3 animate-in fade-in duration-300">
+            {isLoadingRag && Object.keys(ragAnalysisMap).length === 0 && (
+              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                <span>당시 실제 뉴스 팩트 수집 및 RAG LLM 분석 파이프라인 가동 중...</span>
+              </div>
+            )}
+
             <div className="flex flex-col gap-3">
               {(isExpanded ? cycles : cycles.slice(-Math.min(3, cycles.length))).map((cycle, idx) => {
-                const newsCtx = getNewsContextForCycle(symbol, cycle.peakDate, cycle.troughDate)
+                const key = `${cycle.peakDate}-${cycle.troughDate}`
+                const ragData = ragAnalysisMap[key]
+
                 return (
                   <div
                     key={`news-${cycle.peakDate}-${idx}`}
@@ -192,31 +238,40 @@ export default function DrawdownCycleTimeline({
                       </span>
                     </div>
 
-                    {/* 뉴스 & 배경 맥락 요약 */}
+                    {/* RAG 사전 주입 팩트 요약 출력 */}
                     <div className="flex flex-col gap-1 pt-1">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
-                        <Newspaper className="h-3.5 w-3.5" />
-                        <span>주요 폭락 배경: {newsCtx.headline}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed pl-5">
-                        {newsCtx.snippet}
-                      </p>
+                      {ragData ? (
+                        <>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
+                            <Newspaper className="h-3.5 w-3.5" />
+                            <span>실시간 수집 뉴스 기반 원인: {ragData.headline}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed pl-5">
+                            {ragData.snippet}
+                          </p>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground py-2">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          <span>뉴스 데이터 분석 중...</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
               })}
             </div>
 
-            {/* Google OAuth & Gemini AI 보안 혜택 안내 (무DB 안전 JWT 모드) */}
+            {/* AI RAG 파이프라인 안내 */}
             <div className="mt-1 flex items-center justify-between rounded-lg bg-background/80 p-3 border text-xs">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-purple-500 animate-pulse" />
                 <span>
-                  <strong className="text-foreground">AI 심층 뉴스 분석:</strong> 구글 계정으로 연동 시(무DB 세션) 1일 5회까지 Gemini AI가 당시 산업 뉴스 맥락을 심층 요약해줍니다.
+                  <strong className="text-foreground">실시간 RAG 뉴스 파이프라인:</strong> 개발자 하드코딩 0%! 당시 실제 수집된 뉴스를 Gemini LLM에 사전 주입(Context Injection)하여 팩트 기반 판단을 수행합니다.
                 </span>
               </div>
               <span className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">
-                <Lock className="h-3 w-3" /> 무DB 보안 세션
+                <Lock className="h-3 w-3" /> 팩트 기반 RAG
               </span>
             </div>
           </div>
@@ -269,4 +324,5 @@ export default function DrawdownCycleTimeline({
     </Card>
   )
 }
+
 
