@@ -117,6 +117,7 @@ export interface RawApiResponse {
   meta: {
     asset: AssetType
     symbol: string
+    name?: string
     from: string
     to: string
     interval: IntervalType

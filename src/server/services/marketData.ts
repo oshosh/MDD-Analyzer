@@ -810,6 +810,7 @@ export async function getListingInfo(params: {
   asset?: AssetType
 }): Promise<{
   symbol: string
+  name?: string
   asset: AssetType
   listing_date: string
   source: Exclude<DataSourceType, 'MIXED'>

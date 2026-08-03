@@ -15,6 +15,7 @@ import {
   Sparkles,
   Lock,
   Loader2,
+  ExternalLink,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,7 @@ import { GoogleAuthButton, getStoredUserToken } from './GoogleAuthButton'
 interface DrawdownCycleTimelineProps {
   cycles: DrawdownCycle[]
   symbol: string
+  symbolName?: string
   interval: string
 }
 
@@ -64,6 +66,7 @@ function getDrawdownBg(dd: number): string {
 export default function DrawdownCycleTimeline({
   cycles,
   symbol,
+  symbolName,
   interval,
 }: DrawdownCycleTimelineProps) {
   const router = useRouter()
@@ -73,24 +76,19 @@ export default function DrawdownCycleTimeline({
   const [userToken, setUserToken] = useState<string | null>(null)
   const [ragAnalysisMap, setRagAnalysisMap] = useState<Record<string, AiCycleAnalysisResult>>({})
   const [isLoadingRag, setIsLoadingRag] = useState(false)
+  const [showPromptMap, setShowPromptMap] = useState<Record<string, boolean>>({})
 
-  // 주요 하락 사이클이 2개 미만이면 표시하지 않음
-  if (cycles.length < 2) return null
+  function togglePrompt(key: string) {
+    setShowPromptMap((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
-  const currentCycle = cycles.find((c) => c.isCurrent)
-  const pastCycles = cycles.filter((c) => !c.isCurrent)
-
-  const recommendedStartDate = currentCycle
-    ? currentCycle.peakDate
-    : pastCycles.length > 0
-      ? pastCycles[pastCycles.length - 1].troughDate
-      : null
-
-  // 사용자 구글 OAuth 토큰 및 실시간 RAG + LLM 추론 실행
+  // 🚨 React 규칙: 모든 훅은 early return 전에 최상단에 위치해야 합니다.
   useEffect(() => {
     let isMounted = true
     const token = getStoredUserToken()
     setUserToken(token)
+
+    if (!cycles || cycles.length < 2) return
 
     async function loadRagAnalysis() {
       setIsLoadingRag(true)
@@ -104,7 +102,8 @@ export default function DrawdownCycleTimeline({
             cycle.peakDate,
             cycle.troughDate,
             cycle.drawdown,
-            token
+            token,
+            symbolName
           )
           if (isMounted) {
             newMap[key] = res
@@ -123,7 +122,19 @@ export default function DrawdownCycleTimeline({
     return () => {
       isMounted = false
     }
-  }, [symbol, cycles, userToken])
+  }, [symbol, symbolName, cycles, userToken])
+
+  // 주요 하락 사이클이 2개 미만이면 안전하게 return null
+  if (!cycles || cycles.length < 2) return null
+
+  const currentCycle = cycles.find((c) => c.isCurrent)
+  const pastCycles = cycles.filter((c) => !c.isCurrent)
+
+  const recommendedStartDate = currentCycle
+    ? currentCycle.peakDate
+    : pastCycles.length > 0
+      ? pastCycles[pastCycles.length - 1].troughDate
+      : null
 
   function handleReanalyze(startDate: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -213,10 +224,18 @@ export default function DrawdownCycleTimeline({
         {/* 모드 2: 📰 실시간 RAG (뉴스 파싱) + LLM 사전 주입 분석 모드 */}
         {activeTab === 'news' && (
           <div className="flex flex-col gap-3 animate-in fade-in duration-300">
-            {isLoadingRag && Object.keys(ragAnalysisMap).length === 0 && (
-              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
-                <span>당시 실제 뉴스 팩트 수집 및 RAG LLM 분석 파이프라인 가동 중...</span>
+            {/* 🔄 AI 분석 전체 진행 상태 스피너 바 */}
+            {isLoadingRag && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-3 text-xs font-semibold text-purple-700 dark:text-purple-300 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
+                  <span>
+                    ✨ Google Gemini 1.5 Flash AI가 <strong>{symbolName || symbol}</strong>의 역대 하락 시기 뉴스 팩트 및 산업 악재를 정밀 분석하고 있습니다...
+                  </span>
+                </div>
+                <span className="text-[11px] bg-purple-500/20 px-2 py-0.5 rounded font-mono">
+                  실시간 RAG 파이프라인 작동 중
+                </span>
               </div>
             )}
 
@@ -228,7 +247,7 @@ export default function DrawdownCycleTimeline({
                 return (
                   <div
                     key={`news-${cycle.peakDate}-${idx}`}
-                    className={`flex flex-col gap-2 rounded-xl border p-4 transition-all ${getDrawdownBg(cycle.drawdown)}`}
+                    className={`flex flex-col gap-2 rounded-xl border p-4 transition-all ${getDrawdownBg(cycle.drawdown)} relative overflow-hidden`}
                   >
                     <div className="flex items-center justify-between border-b pb-2">
                       <div className="flex items-center gap-2">
@@ -238,45 +257,150 @@ export default function DrawdownCycleTimeline({
                         <span className="font-bold text-sm">
                           {formatDateShort(cycle.peakDate)} ~ {cycle.isCurrent ? '현재 진행 중' : formatDateShort(cycle.troughDate)}
                         </span>
+                        {ragData?.isAiGenerated && (
+                          <span className="flex items-center gap-1 rounded-full bg-purple-500/20 border border-purple-500/40 px-2.5 py-0.5 text-[11px] font-bold text-purple-700 dark:text-purple-300">
+                            <Sparkles className="h-3 w-3 text-purple-500 animate-spin" />
+                            Gemini AI 분석 완료
+                          </span>
+                        )}
                       </div>
                       <span className={`text-sm ${getDrawdownColor(cycle.drawdown)}`}>
                         {(cycle.drawdown * 100).toFixed(1)}% 폭락
                       </span>
                     </div>
 
-                    {/* RAG 사전 주입 팩트 요약 출력 */}
-                    <div className="flex flex-col gap-1 pt-1">
-                      {ragData ? (
-                        <>
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
-                            <Newspaper className="h-3.5 w-3.5" />
-                            <span>실시간 수집 뉴스 기반 원인: {ragData.headline}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed pl-5">
-                            {ragData.snippet}
-                          </p>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground py-2">
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          <span>뉴스 데이터 분석 중...</span>
+                    {/* 1) 구글 로그인 상태 (userToken 존재): 진짜 Gemini AI 분석 결과 및 AI 토글 표시 */}
+                    {userToken ? (
+                      isLoadingRag && !ragData ? (
+                        <div className="flex items-center gap-2 py-3 text-xs text-purple-600 dark:text-purple-400 font-semibold">
+                          <Loader2 className="h-4 w-4 animate-spin text-purple-500 shrink-0" />
+                          <span>✨ Google Gemini AI가 당시 기사 팩트 및 산업 악재를 심층 추론하고 있습니다...</span>
                         </div>
-                      )}
-                    </div>
+                      ) : (
+                        <div className="flex flex-col gap-2 pt-1">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-purple-700 dark:text-purple-300">
+                            <Sparkles className="h-4 w-4 text-purple-500 shrink-0" />
+                            <span>✨ Gemini AI 구조적 폭락 원인: {ragData?.headline}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed pl-5 font-medium">
+                            {ragData?.snippet}
+                          </p>
+
+                          {/* 수집된 실제 뉴스 기사 클릭 원문 링크 */}
+                          {ragData?.sources && ragData.sources.length > 0 && (
+                            <div className="mt-2 flex flex-col gap-1 pl-5 border-t pt-2 border-purple-500/20">
+                              <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
+                                🔗 당시 수집된 검증 뉴스 원문 링크:
+                              </span>
+                              <div className="flex flex-col gap-1">
+                                {ragData.sources.slice(0, 3).map((src, sIdx) => (
+                                  <a
+                                    key={sIdx}
+                                    href={src.link || '#'}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 truncate"
+                                  >
+                                    <ExternalLink className="h-3 w-3 shrink-0" />
+                                    <span className="truncate">{src.title}</span>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 🤖 로그인 상태에서 제공되는 Gemini AI 실제 질의응답 (프롬프트 & AI 원문 응답) 확인란 */}
+                          <div className="mt-2 pl-5 pt-2 border-t border-purple-500/20">
+                            <button
+                              type="button"
+                              onClick={() => togglePrompt(key)}
+                              className="flex items-center gap-1 text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:underline"
+                            >
+                              <Sparkles className="h-3 w-3 text-purple-500" />
+                              {showPromptMap[key] ? '🤖 AI 질의응답 원문 (프롬프트 & 답변) 닫기' : '🤖 Gemini AI 질의응답 원문 (전달된 프롬프트 & AI 실제 답변) 확인'}
+                              {showPromptMap[key] ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                            </button>
+
+                            {showPromptMap[key] && (
+                              <div className="mt-2 flex flex-col gap-2 rounded-lg bg-black/90 p-3 text-[11px] font-mono text-purple-200 border border-purple-500/30 animate-in fade-in duration-200">
+                                <div>
+                                  <span className="font-bold text-purple-400">1. Gemini AI에게 전달된 프롬프트(질문):</span>
+                                  <pre className="mt-1 whitespace-pre-wrap rounded bg-black/50 p-2 text-[10px] text-muted-foreground border border-white/10">
+                                    {ragData?.promptUsed || '프롬프트 생성 완료'}
+                                  </pre>
+                                </div>
+                                <div>
+                                  <span className="font-bold text-emerald-400">2. Gemini AI가 생성한 원문 답변 (Raw Response):</span>
+                                  <pre className="mt-1 whitespace-pre-wrap rounded bg-black/50 p-2 text-[10px] text-emerald-300 border border-white/10">
+                                    {ragData?.rawAiResponse || JSON.stringify({ headline: ragData?.headline, snippet: ragData?.snippet }, null, 2)}
+                                  </pre>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      /* 2) 비로그인 상태 (!userToken): AI 표시 0개! 순수 뉴스 팩트 및 원문 링크만 제공 */
+                      <div className="flex flex-col gap-1.5 pt-1">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
+                          <Newspaper className="h-4 w-4 shrink-0" />
+                          <span>📰 당시 언론 보도 팩트: {ragData?.headline}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed pl-5">
+                          {ragData?.snippet}
+                        </p>
+
+                        {/* 수집된 뉴스 원문 링크 */}
+                        {ragData?.sources && ragData.sources.length > 0 && (
+                          <div className="mt-2 flex flex-col gap-1 pl-5 border-t pt-2 border-amber-500/20">
+                            <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
+                              🔗 당시 수집된 뉴스 원문 링크:
+                            </span>
+                            <div className="flex flex-col gap-1">
+                              {ragData.sources.slice(0, 3).map((src, sIdx) => (
+                                <a
+                                  key={sIdx}
+                                  href={src.link || '#'}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 truncate"
+                                >
+                                  <ExternalLink className="h-3 w-3 shrink-0" />
+                                  <span className="truncate">{src.title}</span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="mt-2 pl-5 pt-1.5 text-[11px] text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
+                          <Lock className="h-3 w-3 shrink-0" />
+                          <span>Google 계정 로그인 시 Gemini AI의 구조적 폭락 원인 심층 추론이 제공됩니다.</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               })}
             </div>
 
-            {/* Google OAuth & Gemini AI 서비스 비교 및 방법론 안내 박스 */}
+            {/* Google OAuth & Gemini AI 서비스 비교 및 상태 안내 박스 */}
             <div className="mt-2 flex flex-col gap-3 rounded-xl border border-purple-500/20 bg-purple-500/5 p-4 text-xs dark:bg-purple-950/20">
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5 font-bold text-purple-700 dark:text-purple-300 text-sm">
-                  <Sparkles className="h-4 w-4 text-purple-500 animate-pulse shrink-0" />
-                  <span>💡 AI 맥락 분석 & Google OAuth 연동 안내</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 font-bold text-purple-700 dark:text-purple-300 text-sm">
+                    <Sparkles className="h-4 w-4 text-purple-500 animate-pulse shrink-0" />
+                    <span>💡 AI 맥락 분석 & Google OAuth 연동 상태</span>
+                  </div>
+                  {userToken && (
+                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
+                      🟢 Gemini AI 연동 가동 중
+                    </span>
+                  )}
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                  수학 알고리즘으로 감지한 역대 대규모 하락 구간(-40% 이상)의 <strong>고점~저점 시기</strong>를 기준으로 당시 언론 보도 팩트를 수집합니다.
+                  수학 알고리즘으로 감지한 역대 하락 구간(-40% 이상)의 <strong>고점~저점 시기</strong>를 기준으로 당시 뉴스 보도 팩트와 기업/산업군 구조적 악재를 분석합니다.
                 </p>
               </div>
 
@@ -286,22 +410,24 @@ export default function DrawdownCycleTimeline({
                     🔓 비로그인 기본 상태
                   </span>
                   <span className="text-muted-foreground text-[11px] leading-normal">
-                    실시간 파싱된 주요 뉴스 헤드라인 및 -40% 폭락 수치 데이터를 기본 제공합니다.
+                    수집된 언론사 실시간 헤드라인 기사 팩트 및 수치 데이터를 제공합니다.
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 rounded-lg bg-purple-500/10 p-2.5 border border-purple-500/30">
                   <span className="font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
-                    ⚡ Google OAuth 로그인 시 (Gemini AI)
+                    ⚡ Google OAuth 연동 상태 (Gemini 1.5 Flash)
                   </span>
                   <span className="text-muted-foreground text-[11px] leading-normal">
-                    수집된 뉴스 팩트를 Gemini LLM에 주입(RAG)하여 <strong>'왜 폭락했는지의 구조적 원인'</strong>과 <strong>'언제부터 시작일로 삼아야 하는지'</strong>를 정밀 추론합니다.
+                    구글 Gemini LLM이 당시 팩트를 주입(RAG)받아 <strong>'기업 및 산업군 폭락 원인'</strong>을 심층 분석합니다.
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
                 <span className="text-[11px] text-muted-foreground">
-                  * 개발자 공용 API 키 소진 없이 본인의 구글 쿼터로 안전하게 연동됩니다.
+                  {userToken
+                    ? `✓ 본인 구글 쿼터로 Gemini AI 서비스가 연동되어 안전하게 작동하고 있습니다.`
+                    : `* 개발자 공용 API 키 소진 없이 본인의 구글 쿼터로 안전하게 연동됩니다.`}
                 </span>
                 <GoogleAuthButton onTokenChange={(newToken) => setUserToken(newToken)} />
               </div>

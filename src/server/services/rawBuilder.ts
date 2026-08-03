@@ -551,6 +551,7 @@ export async function buildRawResponse(params: {
     meta: {
       asset,
       symbol: params.symbol,
+      name: listingInfo?.name ?? params.symbol,
       from: params.from,
       to: params.to,
       interval: params.interval,

@@ -46,6 +46,7 @@ export default function MddContentDisplay({ data, query }: MddContentDisplayProp
       <DrawdownCycleTimeline
         cycles={data.drawdown_cycles.krw}
         symbol={data.meta.symbol}
+        symbolName={query.symbol || data.meta.symbol}
         interval={data.meta.interval}
       />
 
