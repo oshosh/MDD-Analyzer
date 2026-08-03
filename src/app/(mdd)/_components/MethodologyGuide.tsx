@@ -82,6 +82,23 @@ export default function MethodologyGuide() {
                     Sortino = (연수익률 - 무위험금리) / 하방 표준편차
                   </code>
                 </p>
+                <div className="mt-3 rounded-lg border border-border/60 bg-muted/40 p-3 space-y-2 text-xs">
+                  <span className="font-bold text-foreground block">💡 샤프 / 소티노 지수 수치별 직관적 평가 기준:</span>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 font-medium">
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      🟢 &gt; 2.0: 매우 우수
+                    </span>
+                    <span className="flex items-center gap-1 text-sky-400">
+                      🔵 1.0 ~ 2.0: 우수
+                    </span>
+                    <span className="flex items-center gap-1 text-amber-400">
+                      🟡 &lt; 1.0: 주의/보통
+                    </span>
+                    <span className="flex items-center gap-1 text-rose-400">
+                      🔴 &lt; 0.0: 위험 (마이너스)
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

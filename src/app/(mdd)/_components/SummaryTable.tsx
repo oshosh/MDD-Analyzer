@@ -47,12 +47,28 @@ function stringifySummary(
   return formatNumber(summary[key] as number)
 }
 
+function getRatioBadgeInfo(valStr: string) {
+  const valNum = parseFloat(valStr)
+  if (isNaN(valNum)) return null
+  if (valNum >= 2.0) {
+    return { label: '🟢 매우 우수', classNames: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400' }
+  }
+  if (valNum >= 1.0) {
+    return { label: '🔵 우수', classNames: 'border-sky-500/40 bg-sky-500/10 text-sky-400' }
+  }
+  if (valNum >= 0) {
+    return { label: '🟡 보통', classNames: 'border-amber-500/40 bg-amber-500/10 text-amber-400' }
+  }
+  return { label: '🔴 위험', classNames: 'border-rose-500/40 bg-rose-500/10 text-rose-400' }
+}
+
 function StatCard({
   label,
   usd,
   krw,
   icon: Icon,
   className,
+  badgeValStr,
 }: {
   label: string
   usd: string
@@ -61,8 +77,10 @@ function StatCard({
     Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
   >
   className?: string
+  badgeValStr?: string
 }) {
   const isNegative = usd.startsWith('-') || krw.startsWith('-')
+  const badgeInfo = badgeValStr ? getRatioBadgeInfo(badgeValStr) : null
 
   return (
     <Card
@@ -83,12 +101,19 @@ function StatCard({
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <Badge
-            variant="outline"
-            className="border-muted-foreground/20 text-muted-foreground mb-1.5 text-[10px] uppercase"
-          >
-            {label}
-          </Badge>
+          <div className="flex items-center gap-1 mb-1.5 flex-wrap">
+            <Badge
+              variant="outline"
+              className="border-muted-foreground/20 text-muted-foreground text-[10px] uppercase"
+            >
+              {label}
+            </Badge>
+            {badgeInfo && (
+              <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 font-bold', badgeInfo.classNames)}>
+                {badgeInfo.label}
+              </Badge>
+            )}
+          </div>
           <TooltipProvider>
             <div className="flex flex-col gap-0.5">
               <Tooltip>
@@ -185,6 +210,7 @@ export default function SummaryTable({ summary, meta }: SummaryTableProps) {
             label="샤프 지수 (Sharpe)"
             usd={stringifySummary(summary.usd, 'sharpe_ratio')}
             krw={stringifySummary(summary.krw, 'sharpe_ratio')}
+            badgeValStr={stringifySummary(summary.krw, 'sharpe_ratio')}
             icon={Zap}
             className="ring-emerald-500/20 bg-emerald-500/5 ring-1"
           />
@@ -192,6 +218,7 @@ export default function SummaryTable({ summary, meta }: SummaryTableProps) {
             label="소티노 지수 (Sortino)"
             usd={stringifySummary(summary.usd, 'sortino_ratio')}
             krw={stringifySummary(summary.krw, 'sortino_ratio')}
+            badgeValStr={stringifySummary(summary.krw, 'sortino_ratio')}
             icon={ShieldCheck}
             className="ring-emerald-500/30 bg-emerald-500/10 ring-1"
           />
