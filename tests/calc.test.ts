@@ -6,6 +6,7 @@ import {
   buildSummary,
   calculateSharpeRatio,
   calculateSortinoRatio,
+  detectMajorDrawdownCycles,
   findMdd,
 } from '@/lib/finance/calc'
 
@@ -71,3 +72,67 @@ describe('MDD formulas', () => {
     expect(minus10?.recovery_rate).toBeCloseTo(0.75, 10)
   })
 })
+
+describe('detectMajorDrawdownCycles', () => {
+  it('detects a single completed cycle with -50% drawdown', () => {
+    // 가격: 100 → 50 → 120 (50% 하락 후 회복)
+    const dates = ['2020-01', '2020-02', '2020-03', '2020-04', '2020-05']
+    const closes = [100, 70, 50, 80, 120]
+    const peaks = buildPeaks(closes)
+    const dds = buildDrawdowns(closes, peaks)
+
+    const cycles = detectMajorDrawdownCycles(dates, closes, dds, -0.4)
+    expect(cycles).toHaveLength(1)
+    expect(cycles[0].drawdown).toBeCloseTo(-0.5, 4)
+    expect(cycles[0].peakDate).toBe('2020-01')
+    expect(cycles[0].troughDate).toBe('2020-03')
+    expect(cycles[0].isCurrent).toBe(false)
+  })
+
+  it('detects multiple cycles like SK Hynix pattern', () => {
+    // 시뮬레이션: 고점100 → 저점1 (99% 폭락) → 회복200 → 저점80 (60% 하락) → 아직 미회복
+    const dates = [
+      '2000-01', '2001-01', '2002-01', '2003-01', // 1차 폭락
+      '2015-01', '2020-01',                       // 회복 + 새 고점
+      '2024-01', '2025-01',                        // 2차 하락 (진행 중)
+    ]
+    const closes = [100, 30, 5, 1, 150, 200, 120, 80]
+    const peaks = buildPeaks(closes)
+    const dds = buildDrawdowns(closes, peaks)
+
+    const cycles = detectMajorDrawdownCycles(dates, closes, dds, -0.4)
+    expect(cycles.length).toBeGreaterThanOrEqual(2)
+
+    // 1차: -99% 폭락
+    expect(cycles[0].drawdown).toBeLessThanOrEqual(-0.9)
+    expect(cycles[0].isCurrent).toBe(false)
+
+    // 마지막 사이클은 진행 중
+    const lastCycle = cycles[cycles.length - 1]
+    expect(lastCycle.isCurrent).toBe(true)
+    expect(lastCycle.drawdown).toBeLessThanOrEqual(-0.4)
+  })
+
+  it('returns empty when no drawdown exceeds threshold', () => {
+    const dates = ['2020-01', '2020-02', '2020-03', '2020-04']
+    const closes = [100, 90, 95, 105]
+    const peaks = buildPeaks(closes)
+    const dds = buildDrawdowns(closes, peaks)
+
+    const cycles = detectMajorDrawdownCycles(dates, closes, dds, -0.4)
+    expect(cycles).toHaveLength(0)
+  })
+
+  it('marks last cycle as isCurrent when still in drawdown', () => {
+    const dates = ['2020-01', '2020-02', '2020-03']
+    const closes = [100, 50, 40]
+    const peaks = buildPeaks(closes)
+    const dds = buildDrawdowns(closes, peaks)
+
+    const cycles = detectMajorDrawdownCycles(dates, closes, dds, -0.4)
+    expect(cycles).toHaveLength(1)
+    expect(cycles[0].isCurrent).toBe(true)
+    expect(cycles[0].drawdown).toBeCloseTo(-0.6, 4)
+  })
+})
+

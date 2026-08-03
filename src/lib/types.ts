@@ -87,6 +87,16 @@ export interface ChartPoint {
   date: string
   value: number
 }
+
+export interface DrawdownCycle {
+  peakDate: string
+  peakPrice: number
+  troughDate: string
+  troughPrice: number
+  drawdown: number
+  isCurrent: boolean
+}
+
 export interface BuySignal {
   level: 1 | 2 | 3 | 4 | 5
   label: string
@@ -160,6 +170,10 @@ export interface RawApiResponse {
       bottom_probability: BottomProbability
       fx_impact: FxImpact | null
     }
+  }
+  drawdown_cycles: {
+    usd: DrawdownCycle[] | null
+    krw: DrawdownCycle[]
   }
   raw: RawRow[]
 }

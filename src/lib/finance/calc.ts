@@ -1,6 +1,7 @@
 import { roundTo } from '@/lib/format'
 import type {
   ChartPoint,
+  DrawdownCycle,
   IntervalType,
   RecoveryRow,
   SummaryRow,
@@ -173,4 +174,104 @@ export function toChartPoints(dates: string[], values: number[]): ChartPoint[] {
     date: dates[index],
     value: roundTo(value, 8),
   }))
+}
+
+/**
+ * 가격 데이터에서 주요 하락 사이클(threshold 이하)을 자동 감지합니다.
+ * 각 사이클은 고점 날짜/가격, 저점 날짜/가격, 낙폭, 현재 진행 여부를 포함합니다.
+ *
+ * 알고리즘:
+ * 1. peaks 배열에서 고점이 변한 시점(새 ATH)을 찾음
+ * 2. 각 고점 구간에서 최대 낙폭이 threshold 이하인 사이클을 추출
+ * 3. 마지막 데이터에서 아직 회복 안 된 경우 isCurrent=true
+ */
+export function detectMajorDrawdownCycles(
+  dates: string[],
+  closes: number[],
+  drawdowns: number[],
+  threshold: number = -0.4
+): DrawdownCycle[] {
+  if (dates.length < 2) return []
+
+  const peaks = buildPeaks(closes)
+  const cycles: DrawdownCycle[] = []
+
+  let cycleStart = -1 // 현재 사이클의 고점 인덱스
+  let troughIdx = -1  // 현재 사이클 내 최저점 인덱스
+  let troughDd = 0    // 현재 사이클 내 최저 낙폭
+
+  for (let i = 0; i < drawdowns.length; i++) {
+    const dd = drawdowns[i]
+
+    // 고점 갱신 시 이전 사이클 마감
+    if (i > 0 && peaks[i] > peaks[i - 1]) {
+      if (cycleStart >= 0 && troughDd <= threshold) {
+        cycles.push({
+          peakDate: dates[cycleStart],
+          peakPrice: roundTo(closes[cycleStart], 4),
+          troughDate: dates[troughIdx],
+          troughPrice: roundTo(closes[troughIdx], 4),
+          drawdown: roundTo(troughDd, 8),
+          isCurrent: false,
+        })
+      }
+      cycleStart = -1
+      troughIdx = -1
+      troughDd = 0
+    }
+
+    // 하락 구간 진입
+    if (dd < 0) {
+      if (cycleStart < 0) {
+        // 직전 고점 위치 찾기
+        for (let j = i; j >= 0; j--) {
+          if (drawdowns[j] >= 0) {
+            cycleStart = j
+            break
+          }
+        }
+        if (cycleStart < 0) cycleStart = 0
+        troughIdx = i
+        troughDd = dd
+      }
+
+      if (dd < troughDd) {
+        troughIdx = i
+        troughDd = dd
+      }
+    }
+
+    // 회복 시 사이클 마감
+    if (dd >= 0 && cycleStart >= 0) {
+      if (troughDd <= threshold) {
+        cycles.push({
+          peakDate: dates[cycleStart],
+          peakPrice: roundTo(closes[cycleStart], 4),
+          troughDate: dates[troughIdx],
+          troughPrice: roundTo(closes[troughIdx], 4),
+          drawdown: roundTo(troughDd, 8),
+          isCurrent: false,
+        })
+      }
+      cycleStart = -1
+      troughIdx = -1
+      troughDd = 0
+    }
+  }
+
+  // 마지막에 아직 회복 안 된 진행 중 사이클
+  if (cycleStart >= 0 && troughDd <= threshold) {
+    const lastIdx = drawdowns.length - 1
+    const isStillDown = drawdowns[lastIdx] < 0
+    cycles.push({
+      peakDate: dates[cycleStart],
+      peakPrice: roundTo(closes[cycleStart], 4),
+      troughDate: dates[troughIdx],
+      troughPrice: roundTo(closes[troughIdx], 4),
+      drawdown: roundTo(troughDd, 8),
+      isCurrent: isStillDown,
+    })
+  }
+
+  return cycles
 }

@@ -12,6 +12,7 @@ import BuySignalPanel from '@/app/(mdd)/_components/BuySignalPanel'
 import AnalyticsPanel from '@/app/(mdd)/_components/AnalyticsPanel'
 import ChartsPanel from '@/app/(mdd)/_components/ChartsPanel'
 import NormalDistributionChart from '@/app/(mdd)/_components/NormalDistributionChart'
+import DrawdownCycleTimeline from '@/app/(mdd)/_components/DrawdownCycleTimeline'
 
 interface MddContentDisplayProps {
   data: RawApiResponse
@@ -40,6 +41,13 @@ export default function MddContentDisplay({ data, query }: MddContentDisplayProp
       )}
 
       <SummaryTable summary={data.summary} meta={data.meta} />
+
+      {/* 역대 주요 하락 사이클 타임라인 */}
+      <DrawdownCycleTimeline
+        cycles={data.drawdown_cycles.krw}
+        symbol={data.meta.symbol}
+        interval={data.meta.interval}
+      />
 
       <Card>
         <CardHeader>

@@ -1,10 +1,11 @@
-﻿import { roundTo } from '@/lib/format'
+import { roundTo } from '@/lib/format'
 import {
   buildCumulative,
   buildDrawdowns,
   buildPeaks,
   buildRecovery,
   buildSummary,
+  detectMajorDrawdownCycles,
   toChartPoints,
 } from '@/lib/finance/calc'
 import type {
@@ -595,6 +596,12 @@ export async function buildRawResponse(params: {
     analytics: {
       usd: analyticsUsd,
       krw: analyticsKrw,
+    },
+    drawdown_cycles: {
+      usd: useFx
+        ? detectMajorDrawdownCycles(dates, usdCloses, usdDrawdowns)
+        : null,
+      krw: detectMajorDrawdownCycles(dates, krwCloses, krwDrawdowns),
     },
     raw: rawRows,
   }
