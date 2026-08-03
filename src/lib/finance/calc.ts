@@ -58,11 +58,61 @@ export function findMdd(drawdowns: number[]): { value: number; index: number } {
   return { value: minValue, index: minIndex }
 }
 
+function getDailyReturns(closes: number[]): number[] {
+  const returns: number[] = []
+  for (let i = 1; i < closes.length; i++) {
+    if (closes[i - 1] > 0) {
+      returns.push((closes[i] - closes[i - 1]) / closes[i - 1])
+    }
+  }
+  return returns
+}
+
+export function calculateSharpeRatio(closes: number[], riskFreeRate: number = 0.03): number {
+  if (closes.length < 2) return 0
+
+  const returns = getDailyReturns(closes)
+  if (returns.length === 0) return 0
+
+  const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length
+  const annualizedReturn = meanReturn * 252
+
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (returns.length - 1 || 1)
+  const dailyStdDev = Math.sqrt(variance)
+  const annualizedStdDev = dailyStdDev * Math.sqrt(252)
+
+  if (annualizedStdDev === 0) return 0
+  return roundTo((annualizedReturn - riskFreeRate) / annualizedStdDev, 4)
+}
+
+export function calculateSortinoRatio(closes: number[], riskFreeRate: number = 0.03): number {
+  if (closes.length < 2) return 0
+
+  const returns = getDailyReturns(closes)
+  if (returns.length === 0) return 0
+
+  const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length
+  const annualizedReturn = meanReturn * 252
+
+  const downsideSquaredSum = returns.reduce((sum, r) => {
+    const downside = Math.min(0, r)
+    return sum + Math.pow(downside, 2)
+  }, 0)
+  const dailyDownsideDev = Math.sqrt(downsideSquaredSum / (returns.length - 1 || 1))
+  const annualizedDownsideDev = dailyDownsideDev * Math.sqrt(252)
+
+  if (annualizedDownsideDev === 0) {
+    return roundTo(annualizedReturn > riskFreeRate ? 99.99 : 0, 4)
+  }
+
+  return roundTo((annualizedReturn - riskFreeRate) / annualizedDownsideDev, 4)
+}
+
 export function buildSummary(
   dates: string[],
   closes: number[],
-  drawdowns: number[]
-  //peaks: number[]
+  drawdowns: number[],
+  riskFreeRate: number = 0.03
 ): SummaryRow {
   if (closes.length === 0) {
     throw new Error('Cannot build summary from empty closes')
@@ -70,6 +120,8 @@ export function buildSummary(
 
   const mdd = findMdd(drawdowns)
   const cumulative = closes[closes.length - 1] / closes[0] - 1
+  const sharpe = calculateSharpeRatio(closes, riskFreeRate)
+  const sortino = calculateSortinoRatio(closes, riskFreeRate)
 
   return {
     start_price: roundTo(closes[0], 4),
@@ -79,6 +131,8 @@ export function buildSummary(
     current_drawdown: roundTo(drawdowns[drawdowns.length - 1], 8),
     mdd: roundTo(mdd.value, 8),
     max_drawdown_date: dates[mdd.index],
+    sharpe_ratio: sharpe,
+    sortino_ratio: sortino,
   }
 }
 

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import type { KrStockIntegrationData } from '@/lib/types'
-import { browserApiClient } from '@/lib/http/axios'
+import { krStockQueryOptions } from '@/app/(mdd)/_lib/queryOptions'
 import { RealtimePriceHeader } from './RealtimePriceHeader'
 import { InvestorBarRow, type DisplayMode } from './InvestorBarRow'
 
@@ -30,14 +29,7 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
   const [marketType, setMarketType] = useState<MarketType>('TOTAL')
   const [displayMode, setDisplayMode] = useState<DisplayMode>('VOLUME')
 
-  const { data, isLoading, isError, error, refetch, isFetching } = useQuery<KrStockIntegrationData>({
-    queryKey: ['kr-stock-integration', stockCode],
-    queryFn: async () => {
-      const res = await browserApiClient.get<KrStockIntegrationData>(`/api/kr-stock?code=${stockCode}`)
-      return res.data
-    },
-    staleTime: 5 * 60_000, // 5분간 캐시 보관 (자동 반복 틱 제거)
-  })
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery(krStockQueryOptions(stockCode))
 
   const handleManualRefresh = async () => {
     await refetch()
@@ -148,15 +140,7 @@ export const InvestorTrendTab: React.FC<InvestorTrendTabProps> = ({
               </p>
             </div>
 
-            <RealtimePriceHeader
-              stockCode={stockCode}
-              initialClosePrice={data.closePrice}
-              initialCompareText={data.compareToPreviousPriceText}
-              initialRatio={data.fluctuationsRatio}
-              initialIsRising={data.isRising}
-              initialIsFalling={data.isFalling}
-              initialFetchedAt={data.fetchedAt}
-            />
+            <RealtimePriceHeader priceInfo={data} />
           </div>
 
           <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-800/60 bg-slate-950/60 p-3 sm:flex-row sm:items-center">

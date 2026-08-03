@@ -50,6 +50,8 @@ export interface SummaryRow {
   current_drawdown: number
   mdd: number
   max_drawdown_date: string
+  sharpe_ratio: number
+  sortino_ratio: number
 }
 
 export interface RecoveryRow {

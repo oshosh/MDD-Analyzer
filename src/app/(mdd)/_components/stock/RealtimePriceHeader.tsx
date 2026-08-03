@@ -3,31 +3,36 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Text } from '@/components/ui/text'
 
-interface RealtimePriceHeaderProps {
-  stockCode: string
-  initialClosePrice: string
-  initialCompareText: string
-  initialRatio: string
-  initialIsRising: boolean
-  initialIsFalling: boolean
-  initialFetchedAt?: string
+export interface StockPriceInfo {
+  closePrice: string
+  compareToPreviousPriceText: string
+  fluctuationsRatio: string
+  isRising: boolean
+  isFalling: boolean
+  fetchedAt?: string
 }
 
-export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
-  initialClosePrice,
-  initialCompareText,
-  initialRatio,
-  initialIsRising,
-  initialIsFalling,
-  initialFetchedAt,
-}) => {
+interface RealtimePriceHeaderProps {
+  priceInfo: StockPriceInfo
+}
+
+export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({ priceInfo }) => {
+  const {
+    closePrice,
+    compareToPreviousPriceText,
+    fluctuationsRatio,
+    isRising,
+    isFalling,
+    fetchedAt,
+  } = priceInfo
+
   const [flash, setFlash] = useState<'UP' | 'DOWN' | null>(null)
-  const prevPriceRef = useRef<string>(initialClosePrice)
+  const prevPriceRef = useRef<string>(closePrice)
 
   useEffect(() => {
-    if (prevPriceRef.current !== initialClosePrice) {
+    if (prevPriceRef.current !== closePrice) {
       const prevNum = parseFloat(prevPriceRef.current.replace(/,/g, '')) || 0
-      const currNum = parseFloat(initialClosePrice.replace(/,/g, '')) || 0
+      const currNum = parseFloat(closePrice.replace(/,/g, '')) || 0
 
       if (currNum > prevNum && prevNum > 0) {
         setFlash('UP')
@@ -39,14 +44,14 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
         setFlash(null)
       }, 1000)
 
-      prevPriceRef.current = initialClosePrice
+      prevPriceRef.current = closePrice
       return () => clearTimeout(timer)
     }
-  }, [initialClosePrice])
+  }, [closePrice])
 
   const priceColor = flash === 'UP' ? 'up' : flash === 'DOWN' ? 'down' : 'default'
-  const changeColor = initialIsRising ? 'up' : initialIsFalling ? 'down' : 'muted'
-  const updatedAt = initialFetchedAt ? new Date(initialFetchedAt).toLocaleTimeString() : ''
+  const changeColor = isRising ? 'up' : isFalling ? 'down' : 'muted'
+  const updatedAt = fetchedAt ? new Date(fetchedAt).toLocaleTimeString() : ''
 
   return (
     <div className="flex flex-col items-end">
@@ -60,16 +65,16 @@ export const RealtimePriceHeader: React.FC<RealtimePriceHeaderProps> = ({
         }`}
       >
         <Text as="span" variant="h3" textColor={priceColor} className="font-extrabold tracking-tight">
-          {initialClosePrice}원
+          {closePrice}원
         </Text>
 
         <p className="flex items-center">
           <Text as="span" variant="small" textColor={changeColor} className="font-semibold">
-            {initialIsRising ? '▲ ' : initialIsFalling ? '▼ ' : ''}
-            {initialCompareText}
+            {isRising ? '▲ ' : isFalling ? '▼ ' : ''}
+            {compareToPreviousPriceText}
           </Text>
           <Text as="span" variant="mono" textColor={changeColor} className="ml-1 font-semibold">
-            ({initialIsRising ? '+' : ''}{initialRatio}%)
+            ({isRising ? '+' : ''}{fluctuationsRatio}%)
           </Text>
         </p>
       </div>

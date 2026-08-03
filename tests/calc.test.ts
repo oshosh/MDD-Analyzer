@@ -3,6 +3,9 @@ import {
   buildDrawdowns,
   buildPeaks,
   buildRecovery,
+  buildSummary,
+  calculateSharpeRatio,
+  calculateSortinoRatio,
   findMdd,
 } from '@/lib/finance/calc'
 
@@ -27,6 +30,31 @@ describe('MDD formulas', () => {
     const mdd = findMdd(dd)
     expect(mdd.value).toBe(-0.2)
     expect(mdd.index).toBe(2)
+  })
+
+  it('calculates sharpe ratio and sortino ratio correctly', () => {
+    // 5일간 종가 변화: [100, 102, 101, 105, 108]
+    const closes = [100, 102, 101, 105, 108]
+    const sharpe = calculateSharpeRatio(closes, 0.03)
+    const sortino = calculateSortinoRatio(closes, 0.03)
+
+    expect(sharpe).toBeGreaterThan(0)
+    expect(sortino).toBeGreaterThan(0)
+    // Sortino should be greater than or equal to Sharpe for upward trend (less downside risk)
+    expect(sortino).toBeGreaterThanOrEqual(sharpe)
+  })
+
+  it('builds summary with sharpe_ratio and sortino_ratio', () => {
+    const dates = ['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04', '2026-01-05']
+    const closes = [100, 102, 101, 105, 108]
+    const peaks = buildPeaks(closes)
+    const dds = buildDrawdowns(closes, peaks)
+    const summary = buildSummary(dates, closes, dds)
+
+    expect(summary.sharpe_ratio).toBeDefined()
+    expect(summary.sortino_ratio).toBeDefined()
+    expect(typeof summary.sharpe_ratio).toBe('number')
+    expect(typeof summary.sortino_ratio).toBe('number')
   })
 
   it('builds recovery rows with count(dd >= L) / N', () => {

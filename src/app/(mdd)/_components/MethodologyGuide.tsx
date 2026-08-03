@@ -66,10 +66,21 @@ export default function MethodologyGuide() {
                 </p>
                 <p>
                   <strong className="text-foreground">
-                    ● 최대 낙폭 (MDD):
+                    ● 샤프 지수 (Sharpe Ratio):
                   </strong>{' '}
-                  특정 기간 동안 발생한 낙폭 중 가장 깊은 골짜기를 의미하며,
-                  투자자가 겪을 수 있는 최악의 시나리오를 보여줍니다.
+                  전체 변동성(위험) 대비 얻은 연율화 초과 수익률입니다. 높을수록 위험 대비 수익률이 우수합니다. (무위험 수익률 연 3% 기준)
+                  <code className="bg-muted text-primary ml-1 rounded px-1.5 py-0.5">
+                    Sharpe = (연수익률 - 무위험금리) / 전체 표준편차
+                  </code>
+                </p>
+                <p>
+                  <strong className="text-foreground">
+                    ● 소티노 지수 (Sortino Ratio):
+                  </strong>{' '}
+                  상승 변동성을 제외하고 오직 하락 변동성(손실 위험)만을 페널티로 계산한 하방 리스크 대비 수익성 지표입니다.
+                  <code className="bg-muted text-primary ml-1 rounded px-1.5 py-0.5">
+                    Sortino = (연수익률 - 무위험금리) / 하방 표준편차
+                  </code>
                 </p>
               </CardContent>
             </Card>

@@ -1,6 +1,4 @@
-'use client'
-
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
@@ -18,6 +16,8 @@ import {
   Clock,
   ArrowRightCircle,
   Database,
+  ShieldCheck,
+  Zap,
   LucideProps,
 } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
@@ -39,6 +39,10 @@ function stringifySummary(
     key === 'mdd'
   ) {
     return formatPercent(summary[key] as number)
+  }
+  if (key === 'sharpe_ratio' || key === 'sortino_ratio') {
+    const val = summary[key] as number
+    return val !== undefined ? val.toFixed(2) : '-'
   }
   return formatNumber(summary[key] as number)
 }
@@ -123,10 +127,6 @@ function StatCard({
   )
 }
 
-import { CardHeader, CardTitle } from '@/components/ui/card'
-
-// ... (rest of the imports and StatCard component are unchanged)
-
 export default function SummaryTable({ summary, meta }: SummaryTableProps) {
   return (
     <Card>
@@ -180,6 +180,20 @@ export default function SummaryTable({ summary, meta }: SummaryTableProps) {
             usd={stringifySummary(summary.usd, 'ath')}
             krw={stringifySummary(summary.krw, 'ath')}
             icon={TrendingUp}
+          />
+          <StatCard
+            label="샤프 지수 (Sharpe)"
+            usd={stringifySummary(summary.usd, 'sharpe_ratio')}
+            krw={stringifySummary(summary.krw, 'sharpe_ratio')}
+            icon={Zap}
+            className="ring-emerald-500/20 bg-emerald-500/5 ring-1"
+          />
+          <StatCard
+            label="소티노 지수 (Sortino)"
+            usd={stringifySummary(summary.usd, 'sortino_ratio')}
+            krw={stringifySummary(summary.krw, 'sortino_ratio')}
+            icon={ShieldCheck}
+            className="ring-emerald-500/30 bg-emerald-500/10 ring-1"
           />
           <StatCard
             label="현재 낙폭"
