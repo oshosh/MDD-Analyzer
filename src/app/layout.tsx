@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import type { PropsWithChildren } from 'react'
-import AppProviders from '@/components/provider/AppProviders'
+import AppProviders from '@shared/providers/AppProviders'
 import './globals.css'
 
 export const metadata: Metadata = {

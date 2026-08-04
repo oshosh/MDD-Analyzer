@@ -4,29 +4,32 @@ globs: '*'
 alwaysApply: true
 ---
 
-# 🏗️ 소스 코드 구조
+# 🏗️ 소스 코드 구조 (Feature-Sliced Design)
 
 ```
 src/
-├── app/                          # Next.js App Router
-│   ├── (mdd)/                    # MDD 분석 메인 기능 레이아웃 그룹
-│   │   ├── _components/          # 메인 기능 전용 컴포넌트
-│   │   ├── _hooks/               # 기능 전용 커스텀 훅
-│   │   └── _lib/                 # 스키마(Zod), 쿼리 옵션 등
-│   ├── api/                      # 외부 금융 데이터 정제 및 호출 API
-│   ├── globals.css               # Material 3 컬러 토큰 및 Tailwind CSS v4 스타일
+├── app/                          # App Layer: Next.js App Router (페이지 라우팅 및 API 라우트)
+│   ├── (mdd)/                    # 메인 페이지 라우트 그룹
+│   ├── api/                      # 외부 금융 데이터 API 라우트
+│   ├── globals.css               # Material 3 컬러 토큰 및 Tailwind v4
 │   └── layout.tsx                # 루트 레이아웃
-├── components/                   # 재사용 가능한 UI 컴포넌트
-│   ├── ui/                       # shadcn/ui 기반 Material 3 UI 요소
-│   ├── table/                    # TanStack Table 기반 금융 데이터 특화 테이블
-│   └── shared/                   # 공통 레이아웃 요소
-├── lib/                          # 공용 유틸리티 및 로직
-│   ├── finance/                  # 핵심 MDD 및 금융 수학 로직 (Core)
-│   ├── http/                     # API 클라이언트 및 통신 설정
-│   └── utils.ts                  # Tailwind Merge, clsx 등 공통 유틸리티
-├── server/                       # 서버 사이드 전용 코드
-│   └── services/                 # 비즈니스 로직 서비스 계층 (API 핸들러 호출용)
-└── hooks/                        # 공용 React 훅 (useIsMounted 등)
+├── widgets/                      # Widget Layer: 복수 Feature/Entity 조합 UI
+│   └── mdd-dashboard/            # MDD 대시보드 메인 조립 컴포넌트 (MddContents, MddContentDisplay)
+├── features/                     # Feature Layer: 독립적 사용자 기능 모듈
+│   ├── mdd-analysis/             # MDD 분석 기능 (ui, model, api)
+│   ├── ai-cycle-analysis/        # AI 낙폭 주기 분석 기능 (ui, model, lib)
+│   └── kr-stock-trend/           # 한국 주식 실시간 수급 분석 기능 (ui, model)
+├── entities/                     # Entity Layer: 비즈니스 도메인 모델
+│   ├── instrument/               # 금융 자산 / 인터벌 / 시세 데이터 모델
+│   ├── mdd/                      # MDD 연산, 회복력, 구매신호 데이터 모델
+│   └── kr-stock/                 # 한국 주식 수급 데이터 모델
+├── shared/                       # Shared Layer: 공용 인프라 및 UI 자산
+│   ├── ui/                       # shadcn/ui 기반 Material 3 UI 컴포넌트
+│   ├── lib/                      # 공용 유틸리티 및 금융 수학 계산 로직
+│   ├── hooks/                    # 공용 커스텀 훅
+│   ├── table/                    # TanStack Table 공용 대용량 테이블
+│   └── providers/                # 글로벌 상태 및 프로바이더 합성
+└── server/                       # Server Service Layer (Next.js 전용 백엔드 비즈니스 로직)
 ```
 
 # ⚙️ 기술 스택 (Technology Stack)

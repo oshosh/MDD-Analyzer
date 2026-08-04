@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { RawQuerySchema } from '@/server/services/requestSchema'
 import { buildRawResponse } from '@/server/services/rawBuilder'
 import { readJsonCache, writeJsonCache } from '@/server/services/serverCache'
-import type { RawApiResponse } from '@/lib/types'
+import type { RawApiResponse } from '@entities/mdd'
 
 function toCacheKey(params: {
   asset: string

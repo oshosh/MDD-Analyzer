@@ -8,7 +8,7 @@ import {
   calculateSortinoRatio,
   detectMajorDrawdownCycles,
   findMdd,
-} from '@/lib/finance/calc'
+} from '@/shared/lib/finance/calc'
 
 describe('MDD formulas', () => {
   it('builds rolling peak correctly', () => {

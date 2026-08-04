@@ -2,8 +2,8 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@shared/ui/card'
+import { Button } from '@shared/ui/button'
 import { FileQuestion, Home } from 'lucide-react'
 
 export default function GlobalNotFound() {

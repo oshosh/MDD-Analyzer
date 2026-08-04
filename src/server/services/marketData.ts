@@ -1,7 +1,7 @@
-import { assertDateRange } from '@/lib/date'
-import { roundTo } from '@/lib/format'
-import { createServerApiClient } from '@/lib/http/axios'
-import { isHttpApiError } from '@/lib/http/error'
+import { assertDateRange } from '@shared/lib/date'
+import { roundTo } from '@shared/lib/format'
+import { createServerApiClient } from '@shared/lib/http/axios'
+import { isHttpApiError } from '@shared/lib/http/error'
 import type {
   AssetType,
   DataSourceType,
@@ -9,7 +9,7 @@ import type {
   Instrument,
   IntervalType,
   PriceCandle,
-} from '@/lib/types'
+} from '@entities/instrument'
 
 interface YahooChartResponse {
   chart: {

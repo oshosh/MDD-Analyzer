@@ -3,7 +3,7 @@ import {
   verifyRequestSignature,
   SIGNATURE_HEADER,
   TIMESTAMP_HEADER,
-} from '@/lib/security'
+} from '@shared/lib/security'
 
 /**
  * Next.js Middleware — API 게이트웨이

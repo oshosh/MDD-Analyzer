@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Button } from '@shared/ui/button'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@shared/ui/card'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 
 export default function MddError({

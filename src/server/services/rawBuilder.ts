@@ -1,4 +1,4 @@
-import { roundTo } from '@/lib/format'
+import { roundTo } from '@shared/lib/format'
 import {
   buildCumulative,
   buildDrawdowns,
@@ -7,20 +7,22 @@ import {
   buildSummary,
   detectMajorDrawdownCycles,
   toChartPoints,
-} from '@/lib/finance/calc'
+} from '@shared/lib/finance/calc'
 import type {
   AssetType,
-  BottomProbability,
-  BuySignal,
   DataSourceType,
-  FxImpact,
   IntervalType,
   PriceCandle,
+} from '@entities/instrument'
+import type {
+  BottomProbability,
+  BuySignal,
+  FxImpact,
   RawApiResponse,
   RawRow,
   RecoveryForecast,
   SummaryRow,
-} from '@/lib/types'
+} from '@entities/mdd'
 import {
   getFx,
   getListingInfo,

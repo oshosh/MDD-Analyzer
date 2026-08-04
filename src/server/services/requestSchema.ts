@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { ASSET_TYPES, INTERVALS } from '@/lib/types'
-import { DEFAULT_FROM, todayIso } from '@/lib/date'
+import { ASSET_TYPES, INTERVALS } from '@entities/instrument'
+import { DEFAULT_FROM, todayIso } from '@shared/lib/date'
 
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 

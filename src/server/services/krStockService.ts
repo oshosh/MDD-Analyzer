@@ -3,7 +3,7 @@ import type {
   DealTrendItem,
   IntradayForeignEstimate,
   KrStockIntegrationData,
-} from '@/lib/types'
+} from '@entities/kr-stock'
 
 export type { DealTrendItem, IntradayForeignEstimate, KrStockIntegrationData }
 

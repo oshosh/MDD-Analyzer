@@ -1,10 +1,12 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Suspense } from 'react'
-import { getQueryClient } from '@/components/provider/react-query-provider/getQueryClient'
-import MddContents from '@/app/(mdd)/_components/MddContents'
-import MddSkeleton from '@/app/(mdd)/_components/MddSkeleton'
-import { mddQueryOptions } from '@/app/(mdd)/_lib/queryOptions'
-import { MddQueryInputSchema } from '@/app/(mdd)/_lib/schemas'
+import { getQueryClient } from '@shared/providers/getQueryClient'
+import { MddContents } from '@widgets/mdd-dashboard'
+import {
+  MddSkeleton,
+  mddQueryOptions,
+  MddQueryInputSchema,
+} from '@features/mdd-analysis'
 
 interface MddPageProps {
   searchParams: Promise<{

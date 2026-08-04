@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerApiClient } from '@/lib/http/axios'
+import { createServerApiClient } from '@shared/lib/http/axios'
 import { KrStockQuerySchema } from '@/server/services/requestSchema'
 
 export const dynamic = 'force-dynamic'
