@@ -36,6 +36,9 @@ export default function MddContentDisplay({
   query,
 }: MddContentDisplayProps) {
   const krStockCode = extractKoreanStockCode(data.meta.symbol)
+  const hasUsdData = Boolean(
+    data.summary.usd && data.charts.mdd_usd && data.recovery.usd
+  )
 
   return (
     <>
@@ -47,11 +50,26 @@ export default function MddContentDisplay({
 
       <ChartsPanel charts={data.charts} />
 
-      <NormalDistributionChart
-        drawdowns={data.charts.mdd_krw.map((d) => d.value)}
-        currentDrawdown={data.summary.krw.current_drawdown}
-        title="원화(KRW) 기준 낙폭 정규분포"
-      />
+      {hasUsdData ? (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <NormalDistributionChart
+            drawdowns={data.charts.mdd_usd!.map((d) => d.value)}
+            currentDrawdown={data.summary.usd!.current_drawdown}
+            title="달러(USD) 기준 낙폭 정규분포"
+          />
+          <NormalDistributionChart
+            drawdowns={data.charts.mdd_krw.map((d) => d.value)}
+            currentDrawdown={data.summary.krw.current_drawdown}
+            title="원화(KRW) 기준 낙폭 정규분포"
+          />
+        </div>
+      ) : (
+        <NormalDistributionChart
+          drawdowns={data.charts.mdd_krw.map((d) => d.value)}
+          currentDrawdown={data.summary.krw.current_drawdown}
+          title="원화(KRW) 기준 낙폭 정규분포"
+        />
+      )}
 
       <DrawdownCycleTimeline
         cycles={data.drawdown_cycles.krw}
@@ -74,12 +92,29 @@ export default function MddContentDisplay({
         </Card>
       )}
 
-      <RecoveryTable
-        title="원화(KRW) 기준 회복 시뮬레이션"
-        rows={data.recovery.krw}
-        interval={query.interval}
-        currentDrawdown={data.summary.krw.current_drawdown}
-      />
+      {hasUsdData ? (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <RecoveryTable
+            title="달러(USD) 기준 회복 시뮬레이션"
+            rows={data.recovery.usd}
+            interval={query.interval}
+            currentDrawdown={data.summary.usd!.current_drawdown}
+          />
+          <RecoveryTable
+            title="원화(KRW) 기준 회복 시뮬레이션"
+            rows={data.recovery.krw}
+            interval={query.interval}
+            currentDrawdown={data.summary.krw.current_drawdown}
+          />
+        </div>
+      ) : (
+        <RecoveryTable
+          title="원화(KRW) 기준 회복 시뮬레이션"
+          rows={data.recovery.krw}
+          interval={query.interval}
+          currentDrawdown={data.summary.krw.current_drawdown}
+        />
+      )}
 
       <RawTable rows={data.raw} meta={data.meta} />
     </>
