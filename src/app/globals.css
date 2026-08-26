@@ -26,6 +26,9 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--card-foreground);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

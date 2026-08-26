@@ -298,12 +298,16 @@ async function fetchYahooChart(
     return cached
   }
 
+  const nowSec = Math.floor(Date.now() / 1000)
+  const period1Sec = Math.min(toUnixSecond(from), nowSec)
+  const period2Sec = Math.min(toUnixSecond(to) + 86400, nowSec)
+
   const url = new URL(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}`
   )
   url.searchParams.set('interval', toYahooInterval(interval))
-  url.searchParams.set('period1', String(toUnixSecond(from)))
-  url.searchParams.set('period2', String(toUnixSecond(to) + 86400))
+  url.searchParams.set('period1', String(period1Sec))
+  url.searchParams.set('period2', String(period2Sec))
   url.searchParams.set('events', 'history')
 
   return withInFlight(cacheKey, async () => {

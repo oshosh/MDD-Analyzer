@@ -1,9 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "src/app/layout.tsx",
-    "src/app/page.tsx",
-    "src/app/api/**/route.ts"
+    "src/app/**/{page,layout,error,not-found,robots,sitemap}.{ts,tsx}",
+    "src/app/api/**/route.ts",
+    "src/**/index.ts",
+    "tests/**/*.test.ts"
   ],
   "project": ["src/**/*.{ts,tsx}"],
   "ignoreDependencies": [
@@ -14,6 +15,14 @@
     "@eslint/eslintrc",
     "@eslint/js",
     "@next/eslint-plugin-next",
-    "@radix-ui/react-separator"
-  ]
+    "postcss"
+  ],
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "unlisted": "error",
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off"
+  }
 }
