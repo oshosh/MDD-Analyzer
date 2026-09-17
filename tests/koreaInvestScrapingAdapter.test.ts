@@ -4,6 +4,7 @@ import {
   parseKoreaInvestMobileCards,
   parseKoreaInvestDesktopTable,
 } from '@/server/services/ipo/koreaInvestScrapingAdapter'
+import { IPO_ADAPTER_TEST_ENV } from './fixtures/ipoAdapterEnv'
 
 const sampleMobileHtml = `
 <div id="product_ipo" class="card_scroll_inner">
@@ -60,10 +61,10 @@ describe('koreaInvestScrapingAdapter', () => {
 
   it('aggregates mobile and desktop data into unified feed response', async () => {
     const mockFetcher = vi.fn().mockImplementation((url: string) => {
-      if (url.includes('mobile')) {
+      if (url === IPO_ADAPTER_TEST_ENV.KIS_IPO_MOBILE_URL) {
         return Promise.resolve(new Response(sampleMobileHtml, { status: 200 }))
       }
-      if (url.includes('Ipo.jsp')) {
+      if (url === IPO_ADAPTER_TEST_ENV.KIS_IPO_DESKTOP_URL) {
         return Promise.resolve(new Response(sampleDesktopHtml, { status: 200 }))
       }
       return Promise.resolve(new Response('Not found', { status: 404 }))
@@ -79,13 +80,17 @@ describe('koreaInvestScrapingAdapter', () => {
     expect(response.source.status).toBe('provisional')
     expect(response.offerings).toHaveLength(2)
 
-    const canaf = response.offerings.find((o) => o.companyName === '카나프테라퓨틱스')
+    const canaf = response.offerings.find(
+      (o) => o.companyName === '카나프테라퓨틱스'
+    )
     expect(canaf).toBeDefined()
     expect(canaf?.brokers[0].name).toBe('한국투자증권')
     expect(canaf?.brokers[0].currentTotalCompetitionRatio).toBe(2237.63)
     expect(canaf?.brokers[0].currentProportionalRatio).toBe(4475.26)
 
-    const global = response.offerings.find((o) => o.companyName === '(주)글로벌테크놀로지')
+    const global = response.offerings.find(
+      (o) => o.companyName === '(주)글로벌테크놀로지'
+    )
     expect(global).toBeDefined()
     expect(global?.brokers[0].limits[0].maxShares).toBe(90000)
   })

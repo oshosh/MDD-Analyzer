@@ -4,6 +4,7 @@ import {
   parseMiraeActiveOfferings,
   parseMiraeRatePopup,
 } from '@/server/services/ipo/miraeScrapingAdapter'
+import { IPO_ADAPTER_TEST_ENV } from './fixtures/ipoAdapterEnv'
 
 const sampleActiveHtml = `
 <table>
@@ -30,7 +31,7 @@ const samplePopupHtml = `
 `
 
 describe('miraeScrapingAdapter', () => {
-  it('parses active offerings from hki3001 table', () => {
+  it('parses active offerings from table markup', () => {
     const offerings = parseMiraeActiveOfferings(sampleActiveHtml)
     expect(offerings).toHaveLength(2)
 
@@ -53,14 +54,18 @@ describe('miraeScrapingAdapter', () => {
 
   it('fetches and maps competition data end-to-end', async () => {
     const mockFetcher = vi.fn().mockImplementation((url: string) => {
-      if (url.includes('hki3001')) {
+      if (url === IPO_ADAPTER_TEST_ENV.MIRAE_IPO_ACTIVE_URL) {
         return Promise.resolve(
-          new Response(new TextEncoder().encode(sampleActiveHtml), { status: 200 })
+          new Response(new TextEncoder().encode(sampleActiveHtml), {
+            status: 200,
+          })
         )
       }
-      if (url.includes('hku4044')) {
+      if (url.startsWith(IPO_ADAPTER_TEST_ENV.MIRAE_IPO_RATE_URL)) {
         return Promise.resolve(
-          new Response(new TextEncoder().encode(samplePopupHtml), { status: 200 })
+          new Response(new TextEncoder().encode(samplePopupHtml), {
+            status: 200,
+          })
         )
       }
       return Promise.resolve(new Response('Not found', { status: 404 }))
@@ -76,7 +81,9 @@ describe('miraeScrapingAdapter', () => {
     expect(response.source.status).toBe('provisional')
     expect(response.offerings).toHaveLength(2)
 
-    const bigwave = response.offerings.find((o) => o.companyName === '빅웨이브로보틱스')
+    const bigwave = response.offerings.find(
+      (o) => o.companyName === '빅웨이브로보틱스'
+    )
     expect(bigwave).toBeDefined()
     expect(bigwave?.brokers).toHaveLength(1)
     expect(bigwave?.brokers[0].name).toBe('미래에셋증권')
@@ -85,7 +92,9 @@ describe('miraeScrapingAdapter', () => {
 
   it('returns unavailable status when no offerings match date', async () => {
     const mockFetcher = vi.fn().mockResolvedValue(
-      new Response(new TextEncoder().encode(sampleActiveHtml), { status: 200 })
+      new Response(new TextEncoder().encode(sampleActiveHtml), {
+        status: 200,
+      })
     )
 
     const adapter = new MiraeScrapingAdapter({
@@ -98,7 +107,7 @@ describe('miraeScrapingAdapter', () => {
     expect(response.offerings).toHaveLength(0)
   })
 
-  it('fetches and maps mobile JSON with p01.json detail (applicant count & 50/50 allocation)', async () => {
+  it('fetches and maps mobile JSON detail (applicant count & 50/50 allocation)', async () => {
     const sampleA01Json = {
       result: 'success',
       GRID: [
@@ -131,12 +140,12 @@ describe('miraeScrapingAdapter', () => {
     }
 
     const mockFetcher = vi.fn().mockImplementation((url: string) => {
-      if (url.includes('a01.json')) {
+      if (url === IPO_ADAPTER_TEST_ENV.MIRAE_IPO_JSON_URL) {
         return Promise.resolve(
           new Response(JSON.stringify(sampleA01Json), { status: 200 })
         )
       }
-      if (url.includes('p01.json')) {
+      if (url === IPO_ADAPTER_TEST_ENV.MIRAE_IPO_DETAIL_JSON_URL) {
         return Promise.resolve(
           new Response(JSON.stringify(sampleP01Json), { status: 200 })
         )
