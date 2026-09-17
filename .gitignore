@@ -64,3 +64,8 @@ desktop.ini
 
 # Project Local Cache
 .cache/
+
+# Reverse Engineering & Sensitive Scratch
+docs/REVERSE_ENGINEERING_HARNESS.md
+docs/BROKER_DIRECT_IPO_ACCESS.md
+scratch/
