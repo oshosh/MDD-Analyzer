@@ -1,17 +1,34 @@
 'use client'
 
-import { useAtomValue } from 'jotai'
+import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'
+import { useSetAtom } from 'jotai'
 import { useEffect, type PropsWithChildren } from 'react'
-import { themeAtom } from '@shared/lib/theme'
+import { themeAtom, type Theme } from '@shared/lib/theme'
 
-export default function LayoutProvider({ children }: PropsWithChildren) {
-  const theme = useAtomValue(themeAtom)
+function ThemeAtomSync() {
+  const { resolvedTheme, theme } = useTheme()
+  const setThemeAtom = useSetAtom(themeAtom)
 
   useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(theme)
-  }, [theme])
+    const current = resolvedTheme ?? theme
+    if (current === 'dark' || current === 'light') {
+      setThemeAtom(current as Theme)
+    }
+  }, [resolvedTheme, theme, setThemeAtom])
+1
+  return null
+}
 
-  return <>{children}</>
+export default function LayoutProvider({ children }: PropsWithChildren) {
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem={false}
+      storageKey="mdd-theme"
+    >
+      <ThemeAtomSync />
+      {children}
+    </NextThemesProvider>
+  )
 }

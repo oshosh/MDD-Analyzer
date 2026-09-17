@@ -20,6 +20,39 @@ const NAVER_HEADERS = {
   'Accept': 'application/json, text/plain, */*',
 } as const
 
+export function parseIntradayForeignEstimate(
+  html: string,
+  currentPrice: number,
+  bizdate: string,
+): IntradayForeignEstimate {
+  const fallback: IntradayForeignEstimate = {
+    bizdate,
+    foreignSellQuant: 0,
+    foreignBuyQuant: 0,
+    foreignNetBuyQuant: 0,
+    foreignNetBuyValue: 0,
+  }
+
+  const foreignIdx = html.indexOf('외국계추정합')
+  if (foreignIdx === -1) return fallback
+
+  const section = html.slice(foreignIdx, foreignIdx + 600)
+  const matches = [...section.matchAll(/<span[^>]*class="tah[^"]*"[^>]*>([+-]?[\d,]+)<\/span>/g)]
+  if (matches.length < 2) return fallback
+
+  const sellQuant = Math.abs(parseNumber(matches[0][1]))
+  const buyQuant = Math.abs(parseNumber(matches[1][1]))
+  const netBuyQuant = buyQuant - sellQuant
+
+  return {
+    bizdate,
+    foreignSellQuant: sellQuant,
+    foreignBuyQuant: buyQuant,
+    foreignNetBuyQuant: netBuyQuant,
+    foreignNetBuyValue: Math.round((netBuyQuant * currentPrice) / 100000000),
+  }
+}
+
 /**
  * 네이버 금융 PC페이지(EUC-KR)의 거래원정보에서
  * 당일 외국계추정합 (매도량 총합, 매수량 총합)을 파싱한 후
@@ -51,29 +84,7 @@ async function fetchIntradayForeignEstimate(stockCode: string, currentPrice: num
     const decoder = new TextDecoder('euc-kr')
     const html = decoder.decode(buffer)
 
-    const foreignIdx = html.indexOf('외국계추정합')
-    if (foreignIdx === -1) return fallback
-
-    const section = html.slice(foreignIdx, foreignIdx + 600)
-    const matches = [...section.matchAll(/<span[^>]*class="tah[^"]*"[^>]*>([+-]?[\d,]+)<\/span>/g)]
-    if (matches.length >= 2) {
-      // 1번째 수치: 매도량 총합
-      const sellQuant = Math.abs(parseNumber(matches[0][1]))
-      // 2번째 수치: 매수량 총합
-      const buyQuant = Math.abs(parseNumber(matches[1][1]))
-      // 정확한 순매수 계산 = (매수량 - 매도량)
-      const netBuyQuant = buyQuant - sellQuant
-      const netBuyValue = Math.round((netBuyQuant * currentPrice) / 100000000)
-
-      return {
-        bizdate: todayBizdate,
-        foreignSellQuant: sellQuant,
-        foreignBuyQuant: buyQuant,
-        foreignNetBuyQuant: netBuyQuant,
-        foreignNetBuyValue: netBuyValue,
-      }
-    }
-    return fallback
+    return parseIntradayForeignEstimate(html, currentPrice, todayBizdate)
   } catch (err) {
     console.error(`[krStockService] Intraday Foreign Estimate Error (${stockCode}):`, err)
     return fallback

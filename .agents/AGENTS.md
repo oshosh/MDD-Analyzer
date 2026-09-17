@@ -33,6 +33,7 @@
 @.agents/rules/04-math-validation.md
 @.agents/rules/05-folder-architecture.md
 @.agents/rules/08-code-quality-standards.md
+@.agents/rules/10-agent-harness-and-qa.md
 
 ## 📊 핵심 기능
 

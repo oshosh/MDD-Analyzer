@@ -14,6 +14,7 @@ interface MddPageProps {
     from?: string
     to?: string
     interval?: string
+    tab?: string
   }>
 }
 
@@ -23,7 +24,10 @@ export default async function MddPage({ searchParams }: MddPageProps) {
   const parsed = MddQueryInputSchema.safeParse(resolved)
   const query = parsed.success ? parsed.data : MddQueryInputSchema.parse({})
 
-  await queryClient.prefetchQuery(mddQueryOptions(query))
+  const shouldPrefetchMdd = resolved.tab !== 'ipo' && resolved.tab !== 'qld'
+  if (shouldPrefetchMdd) {
+    await queryClient.prefetchQuery(mddQueryOptions(query))
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

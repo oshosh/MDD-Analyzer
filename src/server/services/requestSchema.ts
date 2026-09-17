@@ -4,6 +4,14 @@ import { DEFAULT_FROM, todayIso } from '@shared/lib/date'
 
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 
+const IpoDateSchema = DateSchema.refine((value) => {
+  const date = new Date(`${value}T00:00:00.000Z`)
+  return (
+    !Number.isNaN(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value
+  )
+}, 'date must be a valid calendar date')
+
 export const SearchQuerySchema = z.object({
   q: z.string().default(''),
 })
@@ -44,3 +52,6 @@ export const KrStockQuerySchema = z.object({
     .default('005930'),
 })
 
+export const IpoSubscriptionQuerySchema = z.object({
+  date: IpoDateSchema,
+})
