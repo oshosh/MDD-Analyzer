@@ -15,7 +15,7 @@ function ThemeAtomSync() {
       setThemeAtom(current as Theme)
     }
   }, [resolvedTheme, theme, setThemeAtom])
-1
+
   return null
 }
 

@@ -4,9 +4,7 @@ import {
   type IpoCompetitionFeedResponse,
   type IpoDataSource,
 } from '@entities/ipo'
-import { todayKstIso } from '@shared/lib/date'
 import { IpoDataSourceError } from './errors'
-import { normalizeCompanyName } from './normalizeCompanyName'
 
 const IBK_GATEWAY_URL = process.env.IBK_IPO_GATEWAY_URL || ''
 const IBK_TR_CODE = process.env.IBK_IPO_TR_CODE || ''

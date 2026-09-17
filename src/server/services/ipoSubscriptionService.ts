@@ -8,7 +8,6 @@ import {
   type IpoSubscriptionResponse,
 } from '@entities/ipo'
 import {
-  BrokerDirectIpoCompetitionAdapter,
   type IpoCompetitionFeedAdapter,
 } from './ipo/competitionFeedAdapter'
 import { CompositeScrapingAdapter } from './ipo/compositeScrapingAdapter'
@@ -194,7 +193,7 @@ function attachCompetitionSource(
 function brokerFromFeed(
   feedBroker: IpoCompetitionFeedBroker
 ): IpoBrokerSnapshot {
-  let generalAllocationShares = feedBroker.generalAllocationShares
+  const generalAllocationShares = feedBroker.generalAllocationShares
   let equalAllocationShares = feedBroker.equalAllocationShares
   let proportionalAllocationShares = feedBroker.proportionalAllocationShares
 
