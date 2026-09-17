@@ -4,6 +4,7 @@ import {
   parseEugeneDetailTable,
   parseEugeneSelectOptions,
 } from '../src/server/services/ipo/eugeneScrapingAdapter'
+import { IPO_ADAPTER_TEST_ENV } from './fixtures/ipoAdapterEnv'
 
 const EUGENE_LIST_FIXTURE = `
 <select name="input01" id="input01">
@@ -101,7 +102,7 @@ describe('EugeneScrapingAdapter', () => {
   describe('Adapter getCompetitionForDate', () => {
     it('fetches and returns normalized offerings', async () => {
       const mockFetcher = async (url: string) => {
-        if (url.includes('search.do')) {
+        if (url === IPO_ADAPTER_TEST_ENV.EUGENE_IPO_SEARCH_URL) {
           return new Response(EUGENE_DETAIL_FIXTURE, { status: 200 })
         }
         return new Response(EUGENE_LIST_FIXTURE, { status: 200 })

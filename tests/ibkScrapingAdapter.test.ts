@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { IbkScrapingAdapter } from '../src/server/services/ipo/ibkScrapingAdapter'
+import { MOCK_IBK_IPO_TRANSACTION_CODE } from './fixtures/ipoAdapterEnv'
 
 describe('IbkScrapingAdapter', () => {
-  it('parses real wasfCall.jsp response correctly', async () => {
+  it('parses a mocked gateway response correctly', async () => {
     const mockPayload = {
       WA: {
-        SPBSQ010: {
+        [MOCK_IBK_IPO_TRANSACTION_CODE]: {
           WASFState: 70000,
           WASFMsg: '작업이 성공적으로 수행되었습니다.!!',
           otb4: {
